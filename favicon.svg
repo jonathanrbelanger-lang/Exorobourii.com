@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="#003B5C" stroke="#00B4FF" stroke-width="4"/>
+  <!-- Stylized "E" -->
+  <path d="M30 35h40v8H30zm0 22h40v8H30z" fill="#66E0FF"/>
+</svg>
