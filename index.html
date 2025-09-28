@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Exorobourii — Index</title>
+  <title>Exorobourii — Ethical, Reproducible Technology Commons</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       margin: 0;
@@ -15,7 +16,8 @@
       overflow: hidden;
       cursor: pointer;
     }
-    /* Ouroboros watermark */
+
+    /* Ouroborus watermark */
     body::before {
       content: "";
       position: absolute;
@@ -30,10 +32,12 @@
       animation: spin 120s linear infinite;
       pointer-events: none;
     }
+
     @keyframes spin {
-      from { transform: translate(-50%, -50%) rotate(0deg); }
-      to   { transform: translate(-50%, -50%) rotate(360deg); }
+      0%   { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
+
     /* Logo */
     .logo {
       position: relative;
