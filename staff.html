@@ -1,0 +1,257 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff | Exorobourii</title>
+  <meta name="description" content="Exorobourii Staff — the team, the myth, the invitation.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace, Arial, sans-serif;
+      background-color: #000000;
+      color: #00FFFF;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 2em 1em;
+    }
+    header h1 {
+      font-size: 2.5em;
+      margin: 0;
+      color: #00FFFF;
+    }
+    nav {
+      text-align: center;
+      padding: 1em 0;
+      background-color: #111111;
+    }
+    nav a {
+      color: #00FFFF;
+      text-decoration: none;
+      margin: 0 1.5em;
+      font-weight: bold;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    nav a:hover, nav a:focus {
+      border-color: #00FFFF;
+      color: #00FFFF;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      padding: 2em;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .staff-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+    .staff-box {
+      border: 1px solid #00FFFF;
+      padding: 1em;
+      background: #111111;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .staff-box:hover, .staff-box:focus {
+      background: #222222;
+      outline: none;
+    }
+    .staff-box h2 {
+      margin: 0;
+      font-size: 1.2em;
+      color: #00FFFF;
+    }
+    .staff-box .role {
+      font-size: 0.9em;
+      color: #FF00FF;
+    }
+    .staff-detail {
+      flex: 2;
+      margin-left: 2em;
+      border-left: 2px solid #00FFFF;
+      padding-left: 2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      text-align: center;
+      min-height: 300px;
+    }
+    .detail-text {
+      display: none;
+    }
+    .detail-text.active {
+      display: block;
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    footer {
+      text-align: center;
+      padding: 1em;
+      font-size: 0.9em;
+      background-color: #111111;
+      color: #00FFFF;
+    }
+    @media (max-width: 768px) {
+      main {
+        flex-direction: column;
+      }
+      .staff-detail {
+        margin-left: 0;
+        border-left: none;
+        border-top: 2px solid #00FFFF;
+        padding-left: 0;
+        padding-top: 1em;
+        margin-top: 1em;
+      }
+    }
+    .apply-button {
+      color: #00FFFF;
+      text-decoration: none;
+      border: 1px solid #00FFFF;
+      padding: 0.5em 1em;
+      display: inline-block;
+      margin-top: 1em;
+      transition: background 0.3s, color 0.3s;
+    }
+    .apply-button:hover {
+      background: #00FFFF;
+      color: #000000;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Staff</h1>
+    <p>The team, the myth, the invitation.</p>
+  </header>
+
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="mission.html">Mission</a>
+    <a href="projects.html">Projects</a>
+    <a href="staff.html">Staff</a>
+    <a href="helpdesk.html">Helpdesk</a>
+    <a href="about.html">About</a>
+  </nav>
+
+
+  <main>
+    <div class="staff-list">
+      <div class="staff-box" tabindex="0" data-target="founder">
+        <h2>Jonathan Belanger</h2>
+        <div class="role">Founder & Systems Architect</div>
+      </div>
+      <div class="staff-box" tabindex="0" data-target="herald">
+        <h2>Herald</h2>
+        <div class="role">Intern / Chaos Operator</div>
+      </div>
+      <div class="staff-box" tabindex="0" data-target="selene">
+        <h2>Dr. Selene Varga</h2>
+        <div class="role">Ethics & Alignment Lead</div>
+      </div>
+      <div class="staff-box" tabindex="0" data-target="scribe">
+        <h2>Marcus “Scribe” Ito</h2>
+        <div class="role">Archivist & Corpus Engineer</div>
+      </div>
+      <div class="staff-box" tabindex="0" data-target="anika">
+        <h2>Anika Reyes</h2>
+        <div class="role">Community Liaison</div>
+      </div>
+      <div class="staff-box" tabindex="0" data-target="omar">
+        <h2>Omar Kade</h2>
+        <div class="role">Systems Engineer</div>
+      </div>
+      <div class="staff-box" tabindex="0" data-target="eira">
+        <h2>Eira Lokke</h2>
+        <div class="role">Mythographer</div>
+      </div>
+      <div class="staff-box" tabindex="0" data-target="join">
+        <h2>Your Name Here?</h2>
+        <div class="role">Open Invitation</div>
+      </div>
+    </div>
+
+
+    <div class="staff-detail">
+      <div id="default" class="detail-text active">
+        Select a staff member to view details.
+      </div>
+      <div id="founder" class="detail-text">
+        Jonathan Belanger — Founder of Exorobourii. This one is real.
+      </div>
+      <div id="herald" class="detail-text">
+        Herald is fictional. But the role of chaos is always open.
+      </div>
+      <div id="selene" class="detail-text">
+        This role is fictional. Could it be yours?
+      </div>
+      <div id="scribe" class="detail-text">
+        This role is fictional. The archive awaits its keeper.
+      </div>
+      <div id="anika" class="detail-text">
+        This role is fictional. The community needs a voice.
+      </div>
+      <div id="omar" class="detail-text">
+        This role is fictional. The system needs its builder.
+      </div>
+      <div id="eira" class="detail-text">
+        This role is fictional. The lore is waiting for its author.
+      </div>
+      <div id="join" class="detail-text">
+        Exorobourii is not a closed circle. Every learner, builder, and question‑asker is already part of the staff.<br><br>
+        <a href="mailto:Exorobourii@gmail.com?subject=Staff Application" class="apply-button">Apply / Join Us</a>
+      </div>
+    </div>
+  </main>
+
+
+  <footer>
+    &copy; 2025 Exorobourii. All rights reserved.
+  </footer>
+
+
+  <script>
+    const boxes = document.querySelectorAll('.staff-box');
+    const details = document.querySelectorAll('.detail-text');
+
+
+    function showDetail(targetId) {
+      details.forEach(d => d.classList.remove('active'));
+      const target = document.getElementById(targetId);
+      if (target) target.classList.add('active');
+    }
+
+
+    boxes.forEach(box => {
+      box.addEventListener('mouseover', () => {
+        if (window.innerWidth > 768) {
+          showDetail(box.dataset.target);
+        }
+      });
+      box.addEventListener('click', () => {
+        showDetail(box.dataset.target);
+      });
+      box.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          showDetail(box.dataset.target);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

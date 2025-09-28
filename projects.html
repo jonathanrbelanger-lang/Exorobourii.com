@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Projects | Exorobourii</title>
+  <meta name="description" content="Exorobourii Projects — explorations, prototypes, and communal experiments.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace, Arial, sans-serif;
+      background-color: #000000;
+      color: #00FFFF;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 2em 1em;
+    }
+    header h1 {
+      font-size: 2.5em;
+      margin: 0;
+      color: #00FFFF;
+    }
+    nav {
+      text-align: center;
+      padding: 1em 0;
+      background-color: #111111;
+    }
+    nav a {
+      color: #00FFFF;
+      text-decoration: none;
+      margin: 0 1.5em;
+      font-weight: bold;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    nav a:hover, nav a:focus {
+      border-color: #00FFFF;
+      color: #00FFFF;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      padding: 2em;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .project-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+    .project-box {
+      border: 1px solid #00FFFF;
+      padding: 1em;
+      background: #111111;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .project-box:hover, .project-box:focus {
+      background: #222222;
+      outline: none;
+    }
+    .project-box h2 {
+      margin: 0;
+      font-size: 1.2em;
+      color: #00FFFF;
+    }
+    .project-box .status {
+      font-size: 0.9em;
+      color: #FF00FF;
+    }
+    .project-detail {
+      flex: 2;
+      margin-left: 2em;
+      border-left: 2px solid #00FFFF;
+      padding-left: 2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      text-align: center;
+      min-height: 300px;
+    }
+    .detail-text {
+      display: none;
+    }
+    .detail-text.active {
+      display: block;
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    footer {
+      text-align: center;
+      padding: 1em;
+      font-size: 0.9em;
+      background-color: #111111;
+      color: #00FFFF;
+    }
+    /* Mobile layout */
+    @media (max-width: 768px) {
+      main {
+        flex-direction: column;
+      }
+      .project-detail {
+        margin-left: 0;
+        border-left: none;
+        border-top: 2px solid #00FFFF;
+        padding-left: 0;
+        padding-top: 1em;
+        margin-top: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Projects</h1>
+    <p>Explorations, prototypes, and communal experiments.</p>
+  </header>
+
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="mission.html">Mission</a>
+    <a href="projects.html">Projects</a>
+    <a href="staff.html">Staff</a>
+    <a href="helpdesk.html">Helpdesk</a>
+    <a href="about.html">About</a>
+  </nav>
+
+
+  <main>
+    <div class="project-list">
+      <div class="project-box" tabindex="0" data-target="metis">
+        <h2>Project Metis</h2>
+        <div class="status">In Development</div>
+      </div>
+      <div class="project-box" tabindex="0" data-target="pyachamama">
+        <h2>Project Pyachamama</h2>
+        <div class="status">Prototype</div>
+      </div>
+      <div class="project-box" tabindex="0" data-target="eostre">
+        <h2>Project Eostre</h2>
+        <div class="status">In Development</div>
+      </div>
+      <div class="project-box" tabindex="0" data-target="hpu">
+        <h2>HPU xAI</h2>
+        <div class="status">Framework</div>
+      </div>
+      <div class="project-box" tabindex="0" data-target="pachamatrix">
+        <h2>Project Pachamatrix</h2>
+        <div class="status">In Development</div>
+      </div>
+      <div class="project-box" tabindex="0" data-target="vsm">
+        <h2>VSM Protocol</h2>
+        <div class="status">Prototype</div>
+      </div>
+      <div class="project-box" tabindex="0" data-target="egf">
+        <h2>EGF</h2>
+        <div class="status">Conceptual</div>
+      </div>
+      <div class="project-box" tabindex="0" data-target="mihp">
+        <h2>MIHP‑CCCS</h2>
+        <div class="status">Theoretical</div>
+      </div>
+    </div>
+
+
+    <div class="project-detail">
+      <div id="default" class="detail-text active">
+        Select a project to view details.
+      </div>
+      <div id="metis" class="detail-text">
+        Re‑shaping prompt engineering and AI workflows so they’re structured, ethical, and reproducible.
+      </div>
+      <div id="pyachamama" class="detail-text">
+        A quantized, local AI coding assistant—slim, private, no scraping, no callbacks. Just help for anyone who needs it.
+      </div>
+      <div id="eostre" class="detail-text">
+        A bootable environment bundling Pyachamama with Linux Mint, designed for legacy hardware, under‑served communities, and eager learners.
+      </div>
+      <div id="hpu" class="detail-text">
+        A modular drop‑in framework for defining mathematical gradients in AI reasoning and output. Part of the MIHP‑CCCS project.
+      </div>
+      <div id="pachamatrix" class="detail-text">
+        A corpus of academic and scientific terms aligned with ML schemas, building tools for ESL learners.
+      </div>
+      <div id="vsm" class="detail-text">
+        A modular drop‑in for MIHP‑CCCS, defining and measuring ethical gradients inline with AI models—alignment before deployment.
+      </div>
+      <div id="egf" class="detail-text">
+        A novel bipolar assessment system for evaluating abstract ideas before implementation.
+      </div>
+      <div id="mihp" class="detail-text">
+        An AGI theory treating hallucination and confabulation as sparks of true learning. Bio‑inspired, ethically interwoven, radically open.
+      </div>
+    </div>
+  </main>
+
+
+  <footer>
+    &copy; 2025 Exorobourii. All rights reserved.
+  </footer>
+
+
+  <script>
+    const boxes = document.querySelectorAll('.project-box');
+    const details = document.querySelectorAll('.detail-text');
+
+
+    function showDetail(targetId) {
+      details.forEach(d => d.classList.remove('active'));
+      const target = document.getElementById(targetId);
+      if (target) target.classList.add('active');
+    }
+
+
+    boxes.forEach(box => {
+      box.addEventListener('mouseover', () => {
+        if (window.innerWidth > 768) {
+          showDetail(box.dataset.target);
+        }
+      });
+      box.addEventListener('click', () => {
+        showDetail(box.dataset.target);
+      });
+      box.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          showDetail(box.dataset.target);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

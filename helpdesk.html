@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exorobourii Helpdesk</title>
+  <meta name="description" content="Report Herald sightings, timeline anomalies, or recursion errors.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace, Arial, sans-serif;
+      background-color: #000000; /* Black background */
+      color: #00FFFF;           /* Cyan text */
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 2em 1em;
+    }
+    header h1 {
+      font-size: 2.5em;
+      margin: 0;
+      color: #00FFFF;
+    }
+    nav {
+      text-align: center;
+      padding: 1em 0;
+      background-color: #111111;
+    }
+    nav a {
+      color: #00FFFF;
+      text-decoration: none;
+      margin: 0 1.5em;
+      font-weight: bold;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    nav a:hover {
+      border-color: #00FFFF;
+      color: #00FFFF;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2em;
+    }
+    form {
+      background: rgba(0,0,0,0.4);
+      padding: 2em;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 100%;
+    }
+    label {
+      display: block;
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+      text-align: left;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.5em;
+      background: #111111;
+      border: 1px solid #00FFFF;
+      color: #00FFFF;
+      font-family: monospace;
+    }
+    button {
+      margin-top: 1.5em;
+      padding: 0.75em 2em;
+      background: #00FFFF;
+      color: #000000;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #66FFFF;
+    }
+    #errorMessage {
+      margin-top: 1.5em;
+      font-weight: bold;
+      color: #FF00FF; /* Magenta glitch vibe */
+      white-space: pre-wrap;
+      animation: glitch 1.5s infinite;
+    }
+    @keyframes glitch {
+      0% { text-shadow: 2px 0 #00FFFF, -2px 0 #FF00FF; }
+      20% { text-shadow: -2px -2px #00FFFF, 2px 2px #FF00FF; }
+      40% { text-shadow: 2px 2px #00FFFF, -2px -2px #FF00FF; }
+      60% { text-shadow: -2px 2px #00FFFF, 2px -2px #FF00FF; }
+      80% { text-shadow: 2px -2px #00FFFF, -2px 2px #FF00FF; }
+      100% { text-shadow: 2px 0 #00FFFF, -2px 0 #FF00FF; }
+    }
+    footer {
+      text-align: center;
+      padding: 1em;
+      font-size: 0.9em;
+      background-color: #111111;
+      color: #00FFFF;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Helpdesk</h1>
+    <p>Report Herald sightings, timeline anomalies, or recursion errors.</p>
+  </header>
+
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="mission.html">Mission</a>
+    <a href="projects.html">Projects</a>
+    <a href="staff.html">Staff</a>
+    <a href="helpdesk.html">Helpdesk</a>
+    <a href="about.html">About</a>
+  </nav>
+
+
+  <main>
+    <form id="helpdeskForm" onsubmit="return false;">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name">
+
+
+      <label for="issue">Issue:</label>
+      <textarea id="issue" name="issue" rows="5"></textarea>
+
+
+      <button type="submit" onclick="showError()">Send</button>
+      <div id="errorMessage"></div>
+    </form>
+  </main>
+
+
+  <footer>
+    &copy; 2025 Exorobourii. All rights reserved.
+  </footer>
+
+
+  <script>
+    const errors = [
+      "ERROR 503: Herald unplugged the recursion stack.\n> system integrity: compromised",
+      "ALERT: Timeline anomaly detected.\n> reboot reality: FAILED",
+      "SYSTEM FAILURE: Flux capacitor font upgrade unsuccessful.\n> Herald: 'oops'",
+      "WARNING: Infinite loop engaged.\n> duct-taping recursion stack...",
+      "ERROR: Message lost in the void.\n> retry after Ragnarok",
+      "NOTICE: Herald spilled coffee on the quantum keyboard.\n> stack trace: sticky"
+    ];
+    function showError() {
+      const msg = errors[Math.floor(Math.random() * errors.length)];
+      document.getElementById("errorMessage").innerText = msg;
+    }
+  </script>
+</body>
+</html>
