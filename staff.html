@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Staff | Exorobourii</title>
-  <meta name="description" content="The team, the myth, the invitation.">
+  <title>Staff & Careers | Exorobourii</title>
+  <meta name="description" content="Meet the founder of Exorobourii and explore opportunities to collaborate.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     /* --- SHARED STYLES --- */
@@ -14,9 +14,7 @@
       --accent-color: #38bdf8;   
       --nav-bg: #1e293b; 
       --card-bg: #1e293b;        
-      --card-hover: #26334d;
-      --badge-real: #10b981;     /* Green for real person */
-      --badge-myth: #8b5cf6;     /* Purple for archetype */
+      --border-color: rgba(255, 255, 255, 0.1);
     }
 
     body {
@@ -37,7 +35,7 @@
       align-items: center;
       padding: 1rem 2rem;
       background-color: var(--nav-bg);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid var(--border-color);
     }
 
     .brand {
@@ -65,7 +63,7 @@
     /* --- PAGE CONTENT --- */
     
     .container {
-      max-width: 1200px;
+      max-width: 1000px; /* Slightly narrower for readability */
       margin: 0 auto;
       padding: 4rem 1.5rem;
       flex: 1;
@@ -91,109 +89,112 @@
       font-size: 1.2rem;
     }
 
-    /* Section Separators */
-    h2 {
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      padding-bottom: 0.5rem;
-      margin-top: 3rem;
-      color: var(--text-main);
-      font-size: 1.5rem;
-    }
-
-    /* Card Grid System */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-
-    .card {
+    /* Founder Section */
+    .founder-card {
       background-color: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 8px;
-      padding: 2rem;
-      transition: transform 0.2s, background-color 0.2s;
-      position: relative;
-      overflow: hidden;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 3rem;
+      display: flex;
+      gap: 3rem;
+      align-items: flex-start;
+      margin-bottom: 4rem;
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      background-color: var(--card-hover);
-      border-color: rgba(255,255,255,0.1);
-    }
-
-    /* Badges (The key to the in-joke) */
-    .badge {
-      display: inline-block;
-      font-size: 0.75rem;
+    .founder-image-placeholder {
+      width: 150px;
+      height: 150px;
+      background: linear-gradient(135deg, var(--nav-bg), var(--bg-color));
+      border: 2px solid var(--accent-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
       font-weight: bold;
-      padding: 0.25rem 0.75rem;
-      border-radius: 50px;
+      color: var(--accent-color);
+      flex-shrink: 0;
+    }
+
+    .founder-content h2 {
+      margin-top: 0;
+      font-size: 2rem;
+      color: var(--text-main);
+    }
+
+    .founder-title {
+      display: inline-block;
+      color: var(--accent-color);
+      font-weight: bold;
       margin-bottom: 1rem;
+      font-size: 1.1rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
 
-    .badge-founder { background-color: rgba(16, 185, 129, 0.2); color: var(--badge-real); }
-    .badge-archetype { background-color: rgba(139, 92, 246, 0.2); color: var(--badge-myth); }
-    .badge-invite { background-color: rgba(56, 189, 248, 0.2); color: var(--accent-color); }
+    /* Collaboration Section */
+    .collab-section {
+      border-top: 1px solid var(--border-color);
+      padding-top: 4rem;
+    }
 
-    .card h3 {
-      margin: 0;
-      font-size: 1.4rem;
+    .collab-header {
+      text-align: left;
+      margin-bottom: 2rem;
+    }
+
+    .collab-header h3 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .collab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .collab-item h4 {
       color: var(--text-main);
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
     }
 
-    .role {
-      color: var(--accent-color);
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-      font-weight: 500;
-      display: block;
-    }
-
-    .card p {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      margin: 0;
-    }
-
-    /* Call to Action Card */
-    .card-cta {
-      border: 1px dashed var(--accent-color);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      cursor: pointer;
-    }
-    
-    .apply-link {
-      margin-top: 1rem;
+    .cta-button {
+      display: inline-block;
+      background-color: var(--accent-color);
       color: var(--bg-color);
-      background: var(--accent-color);
-      padding: 0.5rem 1.5rem;
-      border-radius: 4px;
+      padding: 1rem 2rem;
+      border-radius: 6px;
       text-decoration: none;
       font-weight: bold;
-      transition: opacity 0.2s;
+      font-size: 1.1rem;
+      transition: transform 0.2s, filter 0.2s;
     }
-    .apply-link:hover { opacity: 0.9; }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      filter: brightness(110%);
+    }
 
     footer {
       text-align: center;
       padding: 2rem;
       font-size: 0.85rem;
       color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-top: 1px solid var(--border-color);
     }
 
-    @media (max-width: 600px) {
+    /* Responsive */
+    @media (max-width: 768px) {
+      .founder-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 2rem;
+      }
       nav { flex-direction: column; gap: 1rem; }
-      h1 { font-size: 2.25rem; }
     }
   </style>
 </head>
@@ -212,70 +213,53 @@
 
   <div class="container">
     <header>
-      <h1>The Team</h1>
-      <p class="subtitle">The operator, the architecture, and the invitation.</p>
+      <h1>Leadership & Team</h1>
+      <p class="subtitle">Built by individuals, scaling out for the community.</p>
     </header>
 
-    <h2>Operations</h2>
-    <div class="grid">
-      <div class="card">
-        <span class="badge badge-founder">Human Operator</span>
-        <h3>Jonathan Belanger</h3>
-        <span class="role">Founder & Systems Architect</span>
-        <p>The builder. The only person currently paying taxes at this establishment. Focused on scaling out.</p>
-      </div>
-    </div>
-
-    <h2>The Archetypes</h2>
-    <p style="color:var(--text-muted); font-size: 0.9rem; margin-top: -0.5rem;">
-      These roles represent the functions we perform. They are fictional personas, but the work is real.
-    </p>
-
-    <div class="grid">
+    <section class="founder-card">
+      <div class="founder-image-placeholder">JB</div>
       
-      <div class="card">
-        <span class="badge badge-archetype">Chaos Operator</span>
-        <h3>Herald</h3>
-        <span class="role">Intern / Red Teamer</span>
-        <p>The spirit of breaking things to see how they work. Responsible for chaos and stress-testing the system.</p>
+      <div class="founder-content">
+        <h2>Jonathan Belanger</h2>
+        <span class="founder-title">Founder & Systems Architect</span>
+        <p>
+          I built Exorobourii to bridge the gap between high-level AI concepts and accessible, ethical application. 
+          With a background at the intersection of technology and autism advocacy, I focus on systems that are not just smart, but meaningful.
+        </p>
+        <p>
+          My work is dedicated to removing the ego from tech and focusing on pure utility and accessibility.
+        </p>
+      </div>
+    </section>
+
+    <section class="collab-section">
+      <div class="collab-header">
+        <h3>Join the Mission</h3>
+        <p class="subtitle">Exorobourii is actively seeking collaborators. We are looking for minds that value ethics as much as efficiency.</p>
       </div>
 
-      <div class="card">
-        <span class="badge badge-archetype">Alignment</span>
-        <h3>Dr. Selene Varga</h3>
-        <span class="role">Ethics Lead</span>
-        <p>The conscience. Ensures that "what can be done" never overshadows "what should be done."</p>
+      <div class="collab-grid">
+        <div class="collab-item">
+          <h4>For Developers</h4>
+          <p>If you build with accessibility and scale in mind, we want to see your code.</p>
+        </div>
+        <div class="collab-item">
+          <h4>For Researchers</h4>
+          <p>If you are exploring the ethical boundaries of AI and human interaction, let's talk.</p>
+        </div>
+        <div class="collab-item">
+          <h4>For Advocates</h4>
+          <p>If you are working to democratize technology for neurodivergent communities, we are listening.</p>
+        </div>
       </div>
 
-      <div class="card">
-        <span class="badge badge-archetype">Archivist</span>
-        <h3>Marcus “Scribe” Ito</h3>
-        <span class="role">Corpus Engineer</span>
-        <p>The memory. Curating the data, preserving the history, and keeping the records straight.</p>
+      <div style="text-align: center;">
+        <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Have a resumé or a portfolio? Send it over.</p>
+        <a href="mailto:Exorobourii@gmail.com?subject=Collaboration Inquiry" class="cta-button">Review My Profile</a>
       </div>
+    </section>
 
-      <div class="card">
-        <span class="badge badge-archetype">Liaison</span>
-        <h3>Anika Reyes</h3>
-        <span class="role">Community Voice</span>
-        <p>The connection. Reminding us that technology is useless if it doesn't serve the people.</p>
-      </div>
-
-       <div class="card">
-        <span class="badge badge-archetype">Mythographer</span>
-        <h3>Eira Lokke</h3>
-        <span class="role">Narrative Lead</span>
-        <p>The storyteller. Weaving the threads of logic into a fabric of meaning.</p>
-      </div>
-
-      <div class="card card-cta">
-        <span class="badge badge-invite">Open Role</span>
-        <h3>Your Name Here?</h3>
-        <p>Exorobourii is not a closed circle. Every question-asker is part of the staff.</p>
-        <a href="mailto:Exorobourii@gmail.com?subject=Joining the Circle" class="apply-link">Join Us</a>
-      </div>
-
-    </div>
   </div>
 
   <footer>
