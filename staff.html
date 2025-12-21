@@ -1,257 +1,286 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Staff | Exorobourii</title>
-  <meta name="description" content="Exorobourii Staff — the team, the myth, the invitation.">
+  <meta name="description" content="The team, the myth, the invitation.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* --- SHARED STYLES --- */
+    :root {
+      --bg-color: #0f172a;       
+      --text-main: #e2e8f0;      
+      --text-muted: #94a3b8;     
+      --accent-color: #38bdf8;   
+      --nav-bg: #1e293b; 
+      --card-bg: #1e293b;        
+      --card-hover: #26334d;
+      --badge-real: #10b981;     /* Green for real person */
+      --badge-myth: #8b5cf6;     /* Purple for archetype */
+    }
+
     body {
       margin: 0;
-      font-family: monospace, Arial, sans-serif;
-      background-color: #000000;
-      color: #00FFFF;
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      line-height: 1.6;
     }
-    header {
-      text-align: center;
-      padding: 2em 1em;
-    }
-    header h1 {
-      font-size: 2.5em;
-      margin: 0;
-      color: #00FFFF;
-    }
+
+    /* Navigation */
     nav {
-      text-align: center;
-      padding: 1em 0;
-      background-color: #111111;
-    }
-    nav a {
-      color: #00FFFF;
-      text-decoration: none;
-      margin: 0 1.5em;
-      font-weight: bold;
-      border-bottom: 2px solid transparent;
-      transition: border-color 0.3s, color 0.3s;
-    }
-    nav a:hover, nav a:focus {
-      border-color: #00FFFF;
-      color: #00FFFF;
-    }
-    main {
-      flex: 1;
       display: flex;
-      flex-direction: row;
-      padding: 2em;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: var(--nav-bg);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent-color); }
+
+    /* --- PAGE CONTENT --- */
+    
+    .container {
       max-width: 1200px;
       margin: 0 auto;
-    }
-    .staff-list {
+      padding: 4rem 1.5rem;
       flex: 1;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(to right, #fff, var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    /* Section Separators */
+    h2 {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 0.5rem;
+      margin-top: 3rem;
+      color: var(--text-main);
+      font-size: 1.5rem;
+    }
+
+    /* Card Grid System */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 2rem;
+      transition: transform 0.2s, background-color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      background-color: var(--card-hover);
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    /* Badges (The key to the in-joke) */
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-founder { background-color: rgba(16, 185, 129, 0.2); color: var(--badge-real); }
+    .badge-archetype { background-color: rgba(139, 92, 246, 0.2); color: var(--badge-myth); }
+    .badge-invite { background-color: rgba(56, 189, 248, 0.2); color: var(--accent-color); }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: var(--text-main);
+    }
+
+    .role {
+      color: var(--accent-color);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
+      display: block;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* Call to Action Card */
+    .card-cta {
+      border: 1px dashed var(--accent-color);
       display: flex;
       flex-direction: column;
-      gap: 1em;
-    }
-    .staff-box {
-      border: 1px solid #00FFFF;
-      padding: 1em;
-      background: #111111;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .staff-box:hover, .staff-box:focus {
-      background: #222222;
-      outline: none;
-    }
-    .staff-box h2 {
-      margin: 0;
-      font-size: 1.2em;
-      color: #00FFFF;
-    }
-    .staff-box .role {
-      font-size: 0.9em;
-      color: #FF00FF;
-    }
-    .staff-detail {
-      flex: 2;
-      margin-left: 2em;
-      border-left: 2px solid #00FFFF;
-      padding-left: 2em;
-      display: flex;
-      align-items: center;
       justify-content: center;
-      font-size: 1.2em;
+      align-items: center;
       text-align: center;
-      min-height: 300px;
+      cursor: pointer;
     }
-    .detail-text {
-      display: none;
+    
+    .apply-link {
+      margin-top: 1rem;
+      color: var(--bg-color);
+      background: var(--accent-color);
+      padding: 0.5rem 1.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: opacity 0.2s;
     }
-    .detail-text.active {
-      display: block;
-      animation: fadeIn 0.5s ease-in;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    .apply-link:hover { opacity: 0.9; }
+
     footer {
       text-align: center;
-      padding: 1em;
-      font-size: 0.9em;
-      background-color: #111111;
-      color: #00FFFF;
+      padding: 2rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
-    @media (max-width: 768px) {
-      main {
-        flex-direction: column;
-      }
-      .staff-detail {
-        margin-left: 0;
-        border-left: none;
-        border-top: 2px solid #00FFFF;
-        padding-left: 0;
-        padding-top: 1em;
-        margin-top: 1em;
-      }
-    }
-    .apply-button {
-      color: #00FFFF;
-      text-decoration: none;
-      border: 1px solid #00FFFF;
-      padding: 0.5em 1em;
-      display: inline-block;
-      margin-top: 1em;
-      transition: background 0.3s, color 0.3s;
-    }
-    .apply-button:hover {
-      background: #00FFFF;
-      color: #000000;
+
+    @media (max-width: 600px) {
+      nav { flex-direction: column; gap: 1rem; }
+      h1 { font-size: 2.25rem; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Staff</h1>
-    <p>The team, the myth, the invitation.</p>
-  </header>
-
 
   <nav>
-    <a href="index.html">Home</a>
-    <a href="mission.html">Mission</a>
-    <a href="projects.html">Projects</a>
-    <a href="staff.html">Staff</a>
-    <a href="helpdesk.html">Helpdesk</a>
-    <a href="about.html">About</a>
+    <a href="index.html" class="brand">Exorobourii</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="mission.html">Mission</a>
+      <a href="projects.html">Projects</a>
+      <a href="staff.html">Staff</a>
+      <a href="helpdesk.html">Helpdesk</a>
+    </div>
   </nav>
 
+  <div class="container">
+    <header>
+      <h1>The Team</h1>
+      <p class="subtitle">The operator, the architecture, and the invitation.</p>
+    </header>
 
-  <main>
-    <div class="staff-list">
-      <div class="staff-box" tabindex="0" data-target="founder">
-        <h2>Jonathan Belanger</h2>
-        <div class="role">Founder & Systems Architect</div>
-      </div>
-      <div class="staff-box" tabindex="0" data-target="herald">
-        <h2>Herald</h2>
-        <div class="role">Intern / Chaos Operator</div>
-      </div>
-      <div class="staff-box" tabindex="0" data-target="selene">
-        <h2>Dr. Selene Varga</h2>
-        <div class="role">Ethics & Alignment Lead</div>
-      </div>
-      <div class="staff-box" tabindex="0" data-target="scribe">
-        <h2>Marcus “Scribe” Ito</h2>
-        <div class="role">Archivist & Corpus Engineer</div>
-      </div>
-      <div class="staff-box" tabindex="0" data-target="anika">
-        <h2>Anika Reyes</h2>
-        <div class="role">Community Liaison</div>
-      </div>
-      <div class="staff-box" tabindex="0" data-target="omar">
-        <h2>Omar Kade</h2>
-        <div class="role">Systems Engineer</div>
-      </div>
-      <div class="staff-box" tabindex="0" data-target="eira">
-        <h2>Eira Lokke</h2>
-        <div class="role">Mythographer</div>
-      </div>
-      <div class="staff-box" tabindex="0" data-target="join">
-        <h2>Your Name Here?</h2>
-        <div class="role">Open Invitation</div>
+    <h2>Operations</h2>
+    <div class="grid">
+      <div class="card">
+        <span class="badge badge-founder">Human Operator</span>
+        <h3>Jonathan Belanger</h3>
+        <span class="role">Founder & Systems Architect</span>
+        <p>The builder. The only person currently paying taxes at this establishment. Focused on scaling out.</p>
       </div>
     </div>
 
+    <h2>The Archetypes</h2>
+    <p style="color:var(--text-muted); font-size: 0.9rem; margin-top: -0.5rem;">
+      These roles represent the functions we perform. They are fictional personas, but the work is real.
+    </p>
 
-    <div class="staff-detail">
-      <div id="default" class="detail-text active">
-        Select a staff member to view details.
+    <div class="grid">
+      
+      <div class="card">
+        <span class="badge badge-archetype">Chaos Operator</span>
+        <h3>Herald</h3>
+        <span class="role">Intern / Red Teamer</span>
+        <p>The spirit of breaking things to see how they work. Responsible for chaos and stress-testing the system.</p>
       </div>
-      <div id="founder" class="detail-text">
-        Jonathan Belanger — Founder of Exorobourii. This one is real.
+
+      <div class="card">
+        <span class="badge badge-archetype">Alignment</span>
+        <h3>Dr. Selene Varga</h3>
+        <span class="role">Ethics Lead</span>
+        <p>The conscience. Ensures that "what can be done" never overshadows "what should be done."</p>
       </div>
-      <div id="herald" class="detail-text">
-        Herald is fictional. But the role of chaos is always open.
+
+      <div class="card">
+        <span class="badge badge-archetype">Archivist</span>
+        <h3>Marcus “Scribe” Ito</h3>
+        <span class="role">Corpus Engineer</span>
+        <p>The memory. Curating the data, preserving the history, and keeping the records straight.</p>
       </div>
-      <div id="selene" class="detail-text">
-        This role is fictional. Could it be yours?
+
+      <div class="card">
+        <span class="badge badge-archetype">Liaison</span>
+        <h3>Anika Reyes</h3>
+        <span class="role">Community Voice</span>
+        <p>The connection. Reminding us that technology is useless if it doesn't serve the people.</p>
       </div>
-      <div id="scribe" class="detail-text">
-        This role is fictional. The archive awaits its keeper.
+
+       <div class="card">
+        <span class="badge badge-archetype">Mythographer</span>
+        <h3>Eira Lokke</h3>
+        <span class="role">Narrative Lead</span>
+        <p>The storyteller. Weaving the threads of logic into a fabric of meaning.</p>
       </div>
-      <div id="anika" class="detail-text">
-        This role is fictional. The community needs a voice.
+
+      <div class="card card-cta">
+        <span class="badge badge-invite">Open Role</span>
+        <h3>Your Name Here?</h3>
+        <p>Exorobourii is not a closed circle. Every question-asker is part of the staff.</p>
+        <a href="mailto:Exorobourii@gmail.com?subject=Joining the Circle" class="apply-link">Join Us</a>
       </div>
-      <div id="omar" class="detail-text">
-        This role is fictional. The system needs its builder.
-      </div>
-      <div id="eira" class="detail-text">
-        This role is fictional. The lore is waiting for its author.
-      </div>
-      <div id="join" class="detail-text">
-        Exorobourii is not a closed circle. Every learner, builder, and question‑asker is already part of the staff.<br><br>
-        <a href="mailto:Exorobourii@gmail.com?subject=Staff Application" class="apply-button">Apply / Join Us</a>
-      </div>
+
     </div>
-  </main>
-
+  </div>
 
   <footer>
     &copy; 2025 Exorobourii. All rights reserved.
   </footer>
 
-
-  <script>
-    const boxes = document.querySelectorAll('.staff-box');
-    const details = document.querySelectorAll('.detail-text');
-
-
-    function showDetail(targetId) {
-      details.forEach(d => d.classList.remove('active'));
-      const target = document.getElementById(targetId);
-      if (target) target.classList.add('active');
-    }
-
-
-    boxes.forEach(box => {
-      box.addEventListener('mouseover', () => {
-        if (window.innerWidth > 768) {
-          showDetail(box.dataset.target);
-        }
-      });
-      box.addEventListener('click', () => {
-        showDetail(box.dataset.target);
-      });
-      box.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          showDetail(box.dataset.target);
-        }
-      });
-    });
-  </script>
 </body>
 </html>
