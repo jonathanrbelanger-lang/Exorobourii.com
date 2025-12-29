@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Staff & Careers | Exorobourii</title>
-  <meta name="description" content="Meet the founder of Exorobourii and explore opportunities to collaborate.">
+  <meta name="description" content="Meet the team at Exorobourii and explore opportunities to collaborate on ethical AI.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     /* --- SHARED STYLES --- */
@@ -12,14 +12,14 @@
       --text-main: #e2e8f0;      
       --text-muted: #94a3b8;     
       --accent-color: #38bdf8;   
-      --nav-bg: #1e293b; 
+      --nav-bg: rgba(15, 23, 42, 0.85); /* Glassmorphism base */
       --card-bg: #1e293b;        
       --border-color: rgba(255, 255, 255, 0.1);
     }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
       display: flex;
@@ -28,14 +28,19 @@
       line-height: 1.6;
     }
 
-    /* Navigation */
+    /* Navigation (Glassmorphism) */
     nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1rem 2rem;
       background-color: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
 
     .brand {
@@ -43,6 +48,7 @@
       font-weight: bold;
       color: var(--text-main);
       text-decoration: none;
+      letter-spacing: -0.02em;
     }
 
     .nav-links {
@@ -55,15 +61,17 @@
       text-decoration: none;
       font-size: 0.95rem;
       font-weight: 500;
-      transition: color 0.2s;
+      transition: color 0.2s ease;
     }
 
-    .nav-links a:hover { color: var(--accent-color); }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--accent-color);
+    }
 
     /* --- PAGE CONTENT --- */
     
     .container {
-      max-width: 1000px; /* Slightly narrower for readability */
+      max-width: 1000px;
       margin: 0 auto;
       padding: 4rem 1.5rem;
       flex: 1;
@@ -79,9 +87,10 @@
     h1 {
       font-size: 3rem;
       margin: 0 0 0.5rem 0;
-      background: linear-gradient(to right, #fff, var(--accent-color));
+      background: linear-gradient(135deg, #e2e8f0 0%, var(--accent-color) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      letter-spacing: -0.03em;
     }
 
     .subtitle {
@@ -99,13 +108,18 @@
       gap: 3rem;
       align-items: flex-start;
       margin-bottom: 4rem;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .founder-card:hover {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
     .founder-image-placeholder {
       width: 150px;
       height: 150px;
-      background: linear-gradient(135deg, var(--nav-bg), var(--bg-color));
-      border: 2px solid var(--accent-color);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 1), rgba(56, 189, 248, 0.2));
+      border: 1px solid var(--accent-color);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -114,6 +128,7 @@
       font-weight: bold;
       color: var(--accent-color);
       flex-shrink: 0;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
     }
 
     .founder-content h2 {
@@ -127,9 +142,26 @@
       color: var(--accent-color);
       font-weight: bold;
       margin-bottom: 1rem;
-      font-size: 1.1rem;
+      font-size: 0.9rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+    }
+    
+    .social-link {
+        display: inline-block;
+        margin-top: 1rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        border-bottom: 1px dashed var(--accent-color);
+    }
+    
+    .social-link:hover {
+        color: var(--accent-color);
+        border-bottom-style: solid;
     }
 
     /* Collaboration Section */
@@ -146,26 +178,41 @@
     .collab-header h3 {
       font-size: 2rem;
       margin-bottom: 0.5rem;
+      color: var(--text-main);
     }
 
     .collab-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 2rem;
-      margin-bottom: 3rem;
+      margin-bottom: 4rem;
+    }
+    
+    .collab-item {
+        background: rgba(255,255,255,0.02);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+    }
+    
+    .collab-item:hover {
+        border-color: var(--accent-color);
+        background: rgba(255,255,255,0.04);
     }
 
     .collab-item h4 {
-      color: var(--text-main);
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
+      color: var(--accent-color);
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+      margin-top: 0;
     }
 
     .cta-button {
       display: inline-block;
       background-color: var(--accent-color);
-      color: var(--bg-color);
-      padding: 1rem 2rem;
+      color: #0f172a; /* Dark text on bright button */
+      padding: 1rem 2.5rem;
       border-radius: 6px;
       text-decoration: none;
       font-weight: bold;
@@ -176,6 +223,7 @@
     .cta-button:hover {
       transform: translateY(-2px);
       filter: brightness(110%);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
     }
 
     footer {
@@ -195,6 +243,7 @@
         padding: 2rem;
       }
       nav { flex-direction: column; gap: 1rem; }
+      h1 { font-size: 2.5rem; }
     }
   </style>
 </head>
@@ -203,11 +252,11 @@
   <nav>
     <a href="index.html" class="brand">Exorobourii</a>
     <div class="nav-links">
-      <a href="index.html">Home</a>
       <a href="mission.html">Mission</a>
       <a href="projects.html">Projects</a>
-      <a href="staff.html">Staff</a>
+      <a href="staff.html" class="active">Staff</a>
       <a href="helpdesk.html">Helpdesk</a>
+      <a href="about.html">About</a>
     </div>
   </nav>
 
@@ -224,12 +273,13 @@
         <h2>Jonathan Belanger</h2>
         <span class="founder-title">Founder & Systems Architect</span>
         <p>
-          I built Exorobourii to bridge the gap between high-level AI concepts and accessible, ethical application. 
-          With a background at the intersection of technology and autism advocacy, I focus on systems that are not just smart, but meaningful.
+          I established Exorobourii to bridge the gap between high-level AI theory and accessible, ethical application. 
+          With a background at the intersection of technology, neurodivergence, and systems engineering, I focus on architectures that are transparent ("Glass Box") and efficient.
         </p>
         <p>
-          My work is dedicated to removing the ego from tech and focusing on pure utility and accessibility.
+          My current focus is the VSM Protocol and Project Janus—proving that intelligence can be optimized without brute force.
         </p>
+        <a href="https://www.linkedin.com/in/jonathanrbelanger" target="_blank" class="social-link">Connect on LinkedIn &rarr;</a>
       </div>
     </section>
 
@@ -241,22 +291,22 @@
 
       <div class="collab-grid">
         <div class="collab-item">
-          <h4>For Developers</h4>
-          <p>If you build with accessibility and scale in mind, we want to see your code.</p>
+          <h4>Research Engineers</h4>
+          <p>If you are exploring Mechanistic Interpretability, Nano-LLMs, or vector space dynamics, we want to see your code.</p>
         </div>
         <div class="collab-item">
-          <h4>For Researchers</h4>
-          <p>If you are exploring the ethical boundaries of AI and human interaction, let's talk.</p>
+          <h4>Ethical Alignment</h4>
+          <p>If you are researching the intersection of AI safety, transparency, and human values, let's talk.</p>
         </div>
         <div class="collab-item">
-          <h4>For Advocates</h4>
-          <p>If you are working to democratize technology for neurodivergent communities, we are listening.</p>
+          <h4>Accessibility Advocates</h4>
+          <p>If you are working to democratize technology for neurodivergent communities (autism, ADHD), we are listening.</p>
         </div>
       </div>
 
       <div style="text-align: center;">
-        <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Have a resumé or a portfolio? Send it over.</p>
-        <a href="mailto:Exorobourii@gmail.com?subject=Collaboration Inquiry" class="cta-button">Review My Profile</a>
+        <p style="margin-bottom: 2rem; color: var(--text-muted); font-size: 1.1rem;">Have a resumé, a GitHub repo, or a paper? Send it over.</p>
+        <a href="mailto:exorobourii@gmail.com?subject=Collaboration Inquiry" class="cta-button">Initiate Contact</a>
       </div>
     </section>
 
