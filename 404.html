@@ -1,79 +1,155 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>503: Herald Has Unplugged Reality | Exorobourii</title>
-  <meta name="description" content="Exorobourii believes in you, however- Herald the Intern has triggered a double-birth event: Pyachamama + Exorobourii.com.">
-  <meta name="keywords" content="Exorobourii, Pyachamama, AI, AGI, tech, consciousness research, ethical AI, recursion, ouroboric systems, infinite loops, AGI frameworks, moral recursion">
-  <meta name="robots" content="index,follow">
-  <meta property="og:title" content="Herald Has Unplugged Reality | Exorobourii">
-  <meta property="og:description" content="The intersection is where accountability lives. Herald’s chaos has opened the portal: Pyachamama + Exorobourii.com.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://exorobourii.com/">
-  <meta property="og:image" content="(your brand logo URL)">
+  <title>404: Reality Not Found | Exorobourii</title>
+  <meta name="description" content="Error 404: The vector you are looking for has collapsed. Blame Herald.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* 1. CSS Variables (Matches Theme) */
+    :root {
+      --bg-color: #0f172a;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent-color: #38bdf8;
+      --error-color: #ef4444;
+      --terminal-bg: #020617;
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* 2. Global Resets */
     body {
-      background-color: #003B5C; /* Secondary */
-      color: #66E0FF;           /* Accent */
-      font-family: monospace;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       text-align: center;
-      padding: 5em;
+      padding: 1rem;
     }
-    h1 {
-      color: #00B4FF;           /* Primary */
-      font-size: 2.5em;
-      margin-bottom: 0.5em;
-      animation: flicker 1.5s infinite;
-    }
-    p {
-      margin: 0.5em 0;
-    }
-    a {
-      color: #66E0FF;           /* Accent */
-      text-decoration: none;
-      border-bottom: 1px dashed #00B4FF;
-    }
-    a:hover {
-      color: #00B4FF;
-    }
-    @keyframes flicker {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-    .console {
-      background: rgba(0,0,0,0.4);
-      padding: 1em;
-      margin-top: 2em;
-      border: 1px solid #00B4FF;
-      display: inline-block;
-      text-align: left;
+
+    /* 3. Crash Container */
+    .crash-container {
       max-width: 600px;
+      width: 100%;
     }
-    .mission {
-      margin-top: 2em;
-      font-size: 0.9em;
-      line-height: 1.4em;
-      color: #66E0FF;
+
+    h1 {
+      font-size: 6rem;
+      margin: 0;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--text-main) 0%, var(--accent-color) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+    }
+
+    .subtitle {
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    /* 4. The Terminal Log */
+    .crash-log {
+      background-color: var(--terminal-bg);
+      border: 1px solid var(--error-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      font-family: 'Courier New', Courier, monospace;
+      text-align: left;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Glitch Bar at top of terminal */
+    .crash-log::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--error-color);
+    }
+
+    .log-line {
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .prefix { color: var(--text-muted); margin-right: 0.5rem; }
+    .keyword { color: var(--accent-color); }
+    .error { color: var(--error-color); font-weight: bold; }
+
+    /* 5. Navigation Buttons */
+    .nav-options {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-color);
+      color: #0f172a;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(110%);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--text-main);
+      color: var(--text-main);
     }
   </style>
 </head>
 <body>
-  <h1>503: Herald Has Unplugged Reality</h1>
-  <p><em>“I was just trying to make it cooler…” – Herald, Intern</em></p>
-  
-  <div class="console">
-    <p>> INIT sequence… failed</p>
-    <p>> Attempting hotfix… failed</p>
-    <p>> Cross‑wiring timelines… <span style="color:#00B4FF;">SUCCESS?</span></p>
-    <p>> Result: <strong>Pyachamama + Exorobourii.com double‑birth event</strong></p>
-    <p>> Advisory: The intersection is unstable. Ethical recursion engaged.</p>
-  </div>
-  
-  <div class="mission">
-    <p><strong>Exorobourii Mission:</strong> We architect modular frameworks at the intersection of cryptanalysis, consciousness research, and ethical recursion. Our work is dedicated to reproducibility, accessibility, and communal elevation—turning collapse into renewal, and error into mythic threshold.</p>
-  </div>
-  
-  <p><a href="/">Return to safety</a> | <a href="/pyachamama">Investigate Pyachamama</a> | <a href="/mission">Read the Mission</a></p>
-</body>
 
+  <div class="crash-container">
+    <h1>404</h1>
+    <p class="subtitle">Reality Not Found</p>
+
+    <div class="crash-log">
+      <div class="log-line"><span class="prefix">></span> INITIALIZING SEARCH...</div>
+      <div class="log-line"><span class="prefix">></span> TARGET: <span class="keyword">requested_page</span></div>
+      <div class="log-line"><span class="prefix">></span> STATUS: <span class="error">MISSING_VECTOR</span></div>
+      <div class="log-line"><span class="prefix">></span> TRACE: Timeline anomaly detected.</div>
+      <div class="log-line"><span class="prefix">></span> ROOT CAUSE: <span class="keyword">Herald (Intern)</span> unplugged the recursion stack to charge a vape pen.</div>
+      <div class="log-line"><span class="prefix">></span> ACTION: Please reboot reality or return to safety.</div>
+    </div>
+
+    <div class="nav-options">
+      <a href="index.html" class="btn btn-primary">Return to Safety</a>
+      <a href="helpdesk.html" class="btn btn-secondary">Report Anomaly</a>
+    </div>
+  </div>
+
+</body>
 </html>
