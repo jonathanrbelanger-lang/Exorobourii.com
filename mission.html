@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mission | Exorobourii</title>
+  <meta name="description" content="Exorobourii Mission — Ethical, Efficient, and Sustainable Technology.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* 1. CSS Variables (Matches Theme) */
+    :root {
+      --bg-color: #0f172a;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent-color: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.1);
+      --nav-bg: rgba(15, 23, 42, 0.85);
+      --card-bg: #1e293b;
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* 2. Global Resets & Typography */
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* 3. Navigation (Glassmorphism) */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--accent-color);
+    }
+
+    /* 4. Hero Section */
+    .mission-hero {
+      text-align: center;
+      padding: 5rem 1rem 4rem 1rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      margin: 0 0 1.5rem 0;
+      background: linear-gradient(135deg, #e2e8f0 0%, var(--accent-color) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .mission-statement {
+      font-size: 1.5rem;
+      color: var(--text-main);
+      font-weight: 300;
+      max-width: 800px;
+      margin: 0 auto 2rem auto;
+    }
+
+    .mission-sub {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* 5. The Three Pillars (Grid Layout) */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .pillar-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Subtle top gradient for each card */
+    .pillar-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--accent-color);
+      opacity: 0.5;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .icon-placeholder {
+      font-size: 2rem;
+      color: var(--accent-color);
+      margin-bottom: 1.5rem;
+      opacity: 0.8;
+    }
+
+    .pillar-card h2 {
+      font-size: 1.5rem;
+      margin: 0 0 1rem 0;
+      color: var(--text-main);
+    }
+
+    .pillar-card p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      flex: 1; /* Pushes content to equal height */
+    }
+
+    .philosophy-tag {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-color);
+      opacity: 0.7;
+      font-weight: 600;
+      margin-top: auto;
+    }
+
+    /* 6. Footer */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      margin-top: 4rem;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr; /* Stack into single column */
+        max-width: 600px;
+      }
+      
+      h1 { font-size: 2.5rem; }
+      .mission-statement { font-size: 1.25rem; }
+      
+      nav { flex-direction: column; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="brand">Exorobourii</a>
+    <div class="nav-links">
+      <a href="mission.html" class="active">Mission</a>
+      <a href="projects.html">Projects</a>
+      <a href="staff.html">Staff</a>
+      <a href="helpdesk.html">Helpdesk</a>
+      <a href="about.html">About</a>
+    </div>
+  </nav>
+
+  <div class="mission-hero">
+    <h1>Our Purpose.</h1>
+    <p class="mission-statement">
+      Pursuing ways to make technology more ethical, more efficient, and more ecologically sustainable.
+    </p>
+    <p class="mission-sub">
+      We build systems that empower without extracting. We optimize intelligence without wasting energy.
+    </p>
+  </div>
+
+  <main>
+    <div class="pillar-card">
+      <div class="icon-placeholder">
+        &#9878; </div>
+      <h2>Ethical</h2>
+      <p>
+        Technology should be a glass box, not a black box. We reject the "move fast and break things" dogma in favor of mechanistic interpretability and radical transparency. We believe that true safety comes from understanding—knowing not just <em>what</em> a model does, but <em>how</em> it thinks.
+      </p>
+      <div class="philosophy-tag">Without Ego</div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="icon-placeholder">
+        &#9881; </div>
+      <h2>Efficient</h2>
+      <p>
+        Intelligence should not require a supercomputer. We are dedicated to maximizing "Expressive Bandwidth"—engineering Nano-LLMs and optimized architectures that do more with less. We prove that smart engineering beats brute force scaling.
+      </p>
+      <div class="philosophy-tag">Without Transaction</div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="icon-placeholder">
+        &#127793; </div>
+      <h2>Sustainable</h2>
+      <p>
+        The future of AI cannot be built on infinite energy consumption. By solving "Attentional Collapse" and reducing structural redundancy, we create systems that are computationally lightweight and ecologically viable. Sustainable code is the only code that lasts.
+      </p>
+      <div class="philosophy-tag">Without Extraction</div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Exorobourii. All rights reserved.
+  </footer>
+
+</body>
+</html>
