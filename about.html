@@ -6,14 +6,15 @@
   <meta name="description" content="Exorobourii is where art meets autism, academia, and technological alchemy.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* --- SHARED STYLES (Same as Index) --- */
+    /* --- SHARED STYLES (Matches Global Theme) --- */
     :root {
       --bg-color: #0f172a;       
       --text-main: #e2e8f0;      
       --text-muted: #94a3b8;     
       --accent-color: #38bdf8;   
-      --nav-bg: #1e293b; 
-      --card-bg: #1e293b;        
+      --nav-bg: rgba(15, 23, 42, 0.85); /* Glassmorphism base */
+      --card-bg: #1e293b;
+      --border-color: rgba(255, 255, 255, 0.1);      
     }
 
     body {
@@ -24,17 +25,22 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      line-height: 1.7; /* Increased slightly for reading blocks of text */
+      line-height: 1.7; 
     }
 
-    /* Navigation */
+    /* Navigation (Glassmorphism) */
     nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1rem 2rem;
       background-color: var(--nav-bg);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
 
     .brand {
@@ -58,7 +64,7 @@
       transition: color 0.2s ease;
     }
 
-    .nav-links a:hover {
+    .nav-links a:hover, .nav-links a.active {
       color: var(--accent-color);
     }
 
@@ -76,7 +82,7 @@
     h1 {
       font-size: 3rem;
       margin-bottom: 0.5rem;
-      background: linear-gradient(to right, #fff, var(--accent-color));
+      background: linear-gradient(135deg, #e2e8f0 0%, var(--accent-color) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: -0.02em;
@@ -94,7 +100,7 @@
       font-size: 1.75rem;
       color: #fff;
       margin-top: 3rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       border-left: 4px solid var(--accent-color);
       padding-left: 1rem;
     }
@@ -110,8 +116,9 @@
       background-color: var(--card-bg);
       padding: 2rem;
       border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
       margin: 2rem 0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
     .highlight-box p {
@@ -134,10 +141,50 @@
       text-align: center;
       font-weight: bold;
       color: var(--text-main);
+      border: 1px solid transparent;
+      transition: border-color 0.3s ease;
+    }
+    
+    .identity-item:hover {
+        border-color: var(--accent-color);
     }
 
     .emphasis {
       color: var(--accent-color);
+    }
+
+    /* Contact Section Styling */
+    .contact-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 1rem;
+    }
+
+    .contact-list li {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .contact-link {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 500;
+        border-bottom: 1px dashed rgba(56, 189, 248, 0.4);
+        transition: all 0.2s ease;
+    }
+
+    .contact-link:hover {
+        color: #fff;
+        border-bottom-style: solid;
+        border-color: var(--accent-color);
+    }
+
+    .contact-label {
+        width: 140px;
+        display: inline-block;
+        color: var(--text-muted);
+        font-size: 0.95rem;
     }
 
     /* Footer */
@@ -146,12 +193,14 @@
       padding: 2rem;
       font-size: 0.85rem;
       color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-top: 1px solid var(--border-color);
     }
 
     @media (max-width: 600px) {
       nav { flex-direction: column; gap: 1rem; }
       h1 { font-size: 2.25rem; }
+      .contact-list li { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+      .contact-label { width: auto; font-size: 0.85rem; opacity: 0.7; }
     }
   </style>
 </head>
@@ -160,12 +209,12 @@
   <nav>
     <a href="index.html" class="brand">Exorobourii</a>
     <div class="nav-links">
-      <a href="index.html">Home</a>
       <a href="mission.html">Mission</a>
       <a href="projects.html">Projects</a>
       <a href="staff.html">Staff</a>
       <a href="helpdesk.html">Helpdesk</a>
-      </div>
+      <a href="about.html" class="active">About</a>
+    </div>
   </nav>
 
   <div class="container">
@@ -195,7 +244,25 @@
       
       <p>I wanted to change that. Not for profit, and not for accolades. We do this work because we can, and because we believe that positive change should be <strong>transaction-free and extraction-free</strong>.</p>
 
-      <p style="margin-top: 3rem; font-style: italic; text-align: center; color: var(--text-main);">
+      <h2>Connect</h2>
+      <p>We are building in public. Whether you want to discuss mechanistic interpretability, collaborate on open research, or just say hello, we are listening.</p>
+      
+      <ul class="contact-list">
+        <li>
+            <span class="contact-label">Email</span>
+            <a href="mailto:exorobourii@gmail.com" class="contact-link">exorobourii@gmail.com</a>
+        </li>
+        <li>
+            <span class="contact-label">LinkedIn (Lab)</span>
+            <a href="https://www.linkedin.com/company/exorobourii-llc/" target="_blank" class="contact-link">company/exorobourii-llc</a>
+        </li>
+        <li>
+            <span class="contact-label">LinkedIn (Founder)</span>
+            <a href="https://www.linkedin.com/in/jonathanrbelanger" target="_blank" class="contact-link">in/jonathanrbelanger</a>
+        </li>
+      </ul>
+
+      <p style="margin-top: 4rem; font-style: italic; text-align: center; color: var(--text-main); border-top: 1px solid var(--border-color); padding-top: 2rem;">
         "Step into the work with us — without pretense, with only care and hope."
       </p>
 
