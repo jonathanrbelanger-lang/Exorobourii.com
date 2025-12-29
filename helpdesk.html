@@ -2,342 +2,337 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Helpdesk Terminal | Exorobourii</title>
-  <meta name="description" content="Exorobourii System Interface. Type 'help' for available commands.">
+  <title>Terminal Access | Exorobourii</title>
+  <meta name="description" content="Unauthorized access detected.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* 1. CSS Variables */
+    /* --- CSS VARIABLES --- */
     :root {
-      --bg-color: #0f172a;
+      --bg-color: #050505;
+      --terminal-bg: #0a0a0a;
       --text-main: #e2e8f0;
-      --text-muted: #94a3b8;
-      --accent-color: #38bdf8;
-      --terminal-bg: #020617; /* Darker, near-black for terminal */
-      --terminal-text: #38bdf8; /* Cyan text */
-      --error-color: #ef4444;
-      --success-color: #22c55e;
-      --nav-bg: rgba(15, 23, 42, 0.85);
-      --border-color: rgba(255, 255, 255, 0.1);
+      --text-muted: #64748b;
+      --accent-cyan: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --accent-purple: #c084fc;
+      --scanline-color: rgba(255, 255, 255, 0.03);
     }
 
-    /* 2. Global Resets */
+    /* --- GLOBAL LAYOUT --- */
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, sans-serif;
+      height: 100vh;
       background-color: var(--bg-color);
       color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      overflow: hidden; /* Prevent body scroll, terminal handles it */
-    }
-
-    /* 3. Navigation */
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background-color: var(--nav-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .brand {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--text-main);
-      text-decoration: none;
-      letter-spacing: -0.02em;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-
-    .nav-links a:hover, .nav-links a.active {
-      color: var(--accent-color);
-    }
-
-    /* 4. Terminal Container */
-    main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      height: calc(100vh - 80px); /* Fill remaining height */
-      box-sizing: border-box;
-    }
-
-    .terminal-window {
-      width: 100%;
-      max-width: 800px;
-      height: 80vh;
-      background-color: var(--terminal-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-      display: flex;
-      flex-direction: column;
       font-family: 'Courier New', Courier, monospace;
-      font-size: 0.95rem;
       overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* Terminal Header */
+    /* --- CRT MONITOR EFFECT --- */
+    .crt-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        to bottom,
+        var(--scanline-color) 50%,
+        rgba(0, 0, 0, 0.1) 50%
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 10;
+      animation: flicker 0.15s infinite;
+    }
+
+    @keyframes flicker {
+      0% { opacity: 0.9; }
+      50% { opacity: 0.95; }
+      100% { opacity: 0.9; }
+    }
+
+    /* --- TERMINAL WINDOW --- */
+    .terminal-container {
+      width: 90%;
+      max-width: 1000px;
+      height: 90vh;
+      background-color: var(--terminal-bg);
+      border: 1px solid #333;
+      border-radius: 6px;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Header */
     .terminal-header {
-      background: #1e293b;
+      background: #111;
       padding: 0.5rem 1rem;
-      border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      border-bottom: 1px solid #333;
     }
 
-    .dot { width: 12px; height: 12px; border-radius: 50%; }
-    .dot.red { background: #ef4444; }
-    .dot.yellow { background: #f59e0b; }
-    .dot.green { background: #22c55e; }
-    .terminal-title {
-      margin-left: auto;
-      margin-right: auto;
-      color: var(--text-muted);
+    .lights { display: flex; gap: 8px; }
+    .light { width: 12px; height: 12px; border-radius: 50%; }
+    .red { background: #ff5f56; }
+    .yellow { background: #ffbd2e; }
+    .green { background: #27c93f; }
+
+    .title {
+      margin: 0 auto;
       font-size: 0.8rem;
-      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
-    /* Terminal Content */
+    /* Body */
     .terminal-body {
       flex: 1;
-      padding: 1.5rem;
+      padding: 1rem;
       overflow-y: auto;
-      color: var(--text-main);
-      scrollbar-width: thin;
-      scrollbar-color: var(--accent-color) var(--terminal-bg);
+      font-size: 1rem;
+      line-height: 1.5;
+      scrollbar-width: none; /* Hide scrollbar Firefox */
     }
+    .terminal-body::-webkit-scrollbar { display: none; }
 
-    .output-line {
-      margin-bottom: 0.5rem;
-      line-height: 1.4;
-      white-space: pre-wrap; /* Preserve line breaks */
-    }
+    /* Text Styles */
+    .line { margin-bottom: 4px; white-space: pre-wrap; word-wrap: break-word; }
+    .cyan { color: var(--accent-cyan); }
+    .green { color: var(--accent-green); }
+    .red { color: var(--accent-red); }
+    .purple { color: var(--accent-purple); }
+    .muted { color: var(--text-muted); }
+    .bold { font-weight: bold; }
+    
+    a { color: inherit; text-decoration: underline; }
 
-    .system-msg { color: var(--text-muted); }
-    .command-msg { color: var(--accent-color); font-weight: bold; }
-    .error-msg { color: var(--error-color); }
-    .success-msg { color: var(--success-color); }
-
-    /* Input Area */
-    .input-line {
-      display: flex;
-      align-items: center;
-      margin-top: 0.5rem;
-    }
-
-    .prompt {
-      color: var(--success-color);
-      margin-right: 0.5rem;
-      font-weight: bold;
-    }
-
-    #cmdInput {
+    /* Input Line */
+    .input-wrapper { display: flex; margin-top: 10px; }
+    .prompt { color: var(--accent-green); margin-right: 10px; }
+    input {
       background: transparent;
       border: none;
-      color: var(--accent-color);
+      color: var(--text-main);
       font-family: inherit;
       font-size: inherit;
       flex: 1;
       outline: none;
-      caret-color: var(--accent-color);
+      caret-color: var(--accent-cyan);
     }
 
-    /* Mobile Responsiveness */
-    @media (max-width: 768px) {
-      nav { flex-direction: column; gap: 1rem; }
-      .terminal-window { height: 70vh; }
+    /* Glitch Animation for Herald */
+    .glitch {
+      animation: glitch-anim 0.3s infinite;
+      color: var(--accent-red);
+      font-weight: bold;
+    }
+
+    @keyframes glitch-anim {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
     }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a href="index.html" class="brand">Exorobourii</a>
-    <div class="nav-links">
-      <a href="mission.html">Mission</a>
-      <a href="projects.html">Projects</a>
-      <a href="staff.html">Staff</a>
-      <a href="helpdesk.html" class="active">Helpdesk</a>
-      <a href="about.html">About</a>
-    </div>
-  </nav>
+  <div class="crt-overlay"></div>
 
-  <main>
-    <div class="terminal-window" onclick="document.getElementById('cmdInput').focus()">
-      <div class="terminal-header">
-        <div class="dot red"></div>
-        <div class="dot yellow"></div>
-        <div class="dot green"></div>
-        <span class="terminal-title">user@exorobourii:~</span>
+  <div class="terminal-container" onclick="document.getElementById('cli').focus()">
+    <div class="terminal-header">
+      <div class="lights">
+        <div class="light red"></div>
+        <div class="light yellow"></div>
+        <div class="light green"></div>
       </div>
+      <div class="title">EXO-OS v4.2</div>
+    </div>
+    
+    <div class="terminal-body" id="output">
+      <div class="line muted">Loading kernel... OK</div>
+      <div class="line muted">Mounting VFS... OK</div>
+      <div class="line muted">Initializing Janus interface... OK</div>
+      <div class="line muted">Checking quarantine containment... <span class="red">WARNING: Leak detected in Sector H</span></div>
+      <br>
+      <div class="line cyan">
+  _____                      _                      _ _ 
+ | ____|_  _____  _ __ ___ | |__   ___  _   _ _ __(_|_)
+ |  _| \ \/ / _ \| '__/ _ \| '_ \ / _ \| | | | '__| | |
+ | |___ >  < (_) | | | (_) | |_) | (_) | |_| | |  | | |
+ |_____/_/\_\___/|_|  \___/|_.__/ \___/ \__,_|_|  |_|_|
+      </div>
+      <div class="line">Welcome to Exorobourii Research Systems.</div>
+      <div class="line">Type <span class="cyan">'help'</span> to view commands. Type <span class="cyan">'ls'</span> to look around.</div>
+      <br>
       
-      <div class="terminal-body" id="terminalOutput">
-        <div class="output-line system-msg">Exorobourii Terminal [Version 3.1.4]</div>
-        <div class="output-line system-msg">(c) 2025 Exorobourii Research Lab. All rights reserved.</div>
-        <div class="output-line system-msg">-----------------------------------------------------</div>
-        <div class="output-line">Welcome, Guest. Type <span class="command-msg">'help'</span> to view available commands.</div>
-        <br>
-        
-        <div class="input-line">
-          <span class="prompt">➜  ~</span>
-          <input type="text" id="cmdInput" autocomplete="off" spellcheck="false" autofocus>
-        </div>
+      <div class="input-wrapper" id="inputLine">
+        <span class="prompt">guest@exorobourii:~$</span>
+        <input type="text" id="cli" autocomplete="off" autofocus>
       </div>
     </div>
-  </main>
+  </div>
 
-  <script>
-    const inputField = document.getElementById('cmdInput');
-    const outputDiv = document.getElementById('terminalOutput');
-    const inputLineContainer = document.querySelector('.input-line');
+<script>
+  // --- FILE SYSTEM MOCKUP ---
+  const fileSystem = {
+    "~": {
+      "projects": { type: "dir", content: ["janus_logs", "vsm_whitepaper.txt"] },
+      "logs": { type: "dir", content: ["chat_history.log", "sys_admin_note.txt"] },
+      "quarantine": { type: "dir", content: ["DO_NOT_OPEN.txt", "herald_manifest.dat"] },
+      "contact.info": { type: "file", content: "Email: exorobourii@gmail.com\nLinkedIn: linkedin.com/company/exorobourii-llc\nFounder: Jonathan Belanger" },
+      "README.md": { type: "file", content: "Welcome to the backend.\nWe prefer 'Glass Box' systems.\nFeel free to explore, but don't touch the training weights." }
+    },
+    "~/projects": {
+      "janus_logs": { type: "file", content: "STEP 4500\nLOSS: 1.5299\nSIGMA_A: 0.0035 (Specialization Confirmed)\nNOTE: Efficiency gap closed. Model is stable." },
+      "vsm_whitepaper.txt": { type: "file", content: "The VSM Protocol defines two metrics:\n1. Coherence (Focus)\n2. Agreement (Specialization)\n\nWe measure the physics of thought." }
+    },
+    "~/logs": {
+      "chat_history.log": { type: "file", content: "[LLC]: Jonathan, the website looks like 1999.\n[JB]: It's minimal.\n[LLC]: It's boring. I'm pushing the update.\n[JB]: Don't you dare.\n[LLC]: *Deploying Modern Dark Mode*..." },
+      "sys_admin_note.txt": { type: "file", content: "TODO: Fix the coffee machine recursion error.\nTODO: Lock down the 'Herald' directory." }
+    },
+    "~/quarantine": {
+      "DO_NOT_OPEN.txt": { type: "file", content: "I warned you." },
+      "herald_manifest.dat": { type: "glitch", content: "H̴e̶r̵a̸l̷d̴ ̷i̸s̶ ̸w̵a̶t̵c̶h̵i̷n̷g̴.̸.̶.̴ ̶\n\nERROR: REALITY UNPLUGGED.\nRebooting timeline..." }
+    }
+  };
 
-    // Command Logic
-    const commands = {
-      help: () => {
-        return `
-  AVAILABLE COMMANDS:
-  -------------------
-  status    : Check system operational status
-  janus     : View Project Janus metrics
-  vsm       : Query VSM Protocol state
-  contact   : Display communication channels
-  about     : Who is this?
-  sudo      : Execute superuser commands
-  clear     : Clear terminal screen
-        `;
-      },
-      
-      status: () => {
-        return `
-  SYSTEM STATUS REPORT:
-  ---------------------
-  [OK] Website Core .......... Online
-  [OK] VSM Sensors ........... <span class="success-msg">Active</span>
-  [OK] Janus Training ........ <span class="success-msg">Optimized</span>
-  [WARN] Founder ............. Debugging Stanza-103
-  [WARN] Coffee Levels ....... <span class="error-msg">Critical</span>
-        `;
-      },
+  // --- STATE ---
+  let currentPath = "~";
+  const input = document.getElementById('cli');
+  const output = document.getElementById('output');
+  const inputContainer = document.getElementById('inputLine');
 
-      janus: () => {
-        return `
-  PROJECT JANUS SUMMARY:
-  ----------------------
-  Training Step: 4,500
-  Architecture: Nano-LLM (40M)
-  Structural Redundancy: <span class="success-msg">-28% (Reduced)</span>
-  Logic Loss: <span class="success-msg">-9.2%</span>
-  Status: Demonstrating Super-Chinchilla Efficiency.
-        `;
-      },
-      
-      vsm: () => {
-        return `
-  VSM PROTOCOL STATE:
-  -------------------
-  Current Mode: Mechanistic Stethoscope
-  Sigma_P (Coherence): <span class="success-msg">High</span>
-  Sigma_A (Agreement): <span class="success-msg">Low (Specialized)</span>
-  
-  "The break from symmetry is confirmed."
-        `;
-      },
+  // --- COMMAND LOGIC ---
+  function executeCommand(cmd) {
+    const parts = cmd.trim().split(' ');
+    const command = parts[0].toLowerCase();
+    const arg = parts[1];
 
-      contact: () => {
-        return `
-  COMMUNICATION CHANNELS:
-  -----------------------
-  Email: <a href="mailto:exorobourii@gmail.com" style="color:var(--accent-color)">exorobourii@gmail.com</a>
-  LinkedIn (Company): <a href="https://www.linkedin.com/company/exorobourii-llc/" target="_blank" style="color:var(--accent-color)">linkedin.com/company/exorobourii-llc</a>
-  LinkedIn (Founder): <a href="https://www.linkedin.com/in/jonathanrbelanger" target="_blank" style="color:var(--accent-color)">linkedin.com/in/jonathanrbelanger</a>
-  
-  NOTE: If sending bug reports, please ensure they are not recursive.
-        `;
-      },
+    printLine(`guest@exorobourii:${currentPath.replace("~", "")}$ ${cmd}`, "muted");
 
-      about: () => {
-        return `Exorobourii is an AI research lab focused on Mechanistic Interpretability, Efficiency, and Sustainability. We don't just build models; we look inside them.`;
-      },
+    switch(command) {
+      case "help":
+        printLine("AVAILABLE COMMANDS:", "bold");
+        printLine("  ls       : List directory contents");
+        printLine("  cd [dir] : Change directory");
+        printLine("  cat [file]: Read file content");
+        printLine("  clear    : Clear screen");
+        printLine("  home     : Return to main site");
+        printLine("  sudo     : ???");
+        break;
 
-      sudo: () => {
-        return `<span class="error-msg">PERMISSION DENIED:</span> You are not in the sudoers file. This incident will be reported to the Herald.`;
-      },
-      
-      herald: () => {
-        // Easter egg from the old site
-        return `Wait... you saw the Herald? Please remain where you are. A containment team has been dispatched.`;
-      }
-    };
-
-    // Event Listener
-    inputField.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        const command = this.value.trim().toLowerCase();
-        
-        // 1. Create history line
-        const historyLine = document.createElement('div');
-        historyLine.className = 'output-line';
-        historyLine.innerHTML = `<span class="prompt">➜  ~</span> <span class="command-msg">${this.value}</span>`;
-        
-        // Insert before the input line
-        outputDiv.insertBefore(historyLine, inputLineContainer);
-
-        // 2. Process command
-        if (command === 'clear') {
-            // Remove all previous siblings of inputLineContainer
-            while(outputDiv.firstChild && outputDiv.firstChild !== inputLineContainer) {
-                outputDiv.removeChild(outputDiv.firstChild);
-            }
-        } else {
-            const responseDiv = document.createElement('div');
-            responseDiv.className = 'output-line';
-            
-            if (commands[command]) {
-                responseDiv.innerHTML = commands[command]();
-            } else if (command === '') {
-                // Do nothing for empty enter
-            } else {
-                responseDiv.innerHTML = `<span class="error-msg">zsh: command not found: ${command}</span>`;
-            }
-            
-            if (command !== '') {
-                outputDiv.insertBefore(responseDiv, inputLineContainer);
-            }
+      case "ls":
+        const dir = getDir(currentPath);
+        if (dir) {
+          const items = Object.keys(dir).map(key => {
+            const type = dir[key].type;
+            return type === "dir" ? `<span class="cyan">${key}/</span>` : key;
+          });
+          printLine(items.join("  "));
         }
+        break;
 
-        // 3. Reset and Scroll
-        this.value = '';
-        outputDiv.scrollTop = outputDiv.scrollHeight;
-      }
-    });
+      case "cd":
+        if (!arg || arg === "~") {
+          currentPath = "~";
+        } else if (arg === "..") {
+          if (currentPath !== "~") currentPath = "~"; // Simple one-level depth for now
+        } else {
+          const newPath = currentPath === "~" ? `~/${arg}` : `~/${arg}`; // simplified pathing
+          if (fileSystem[newPath]) {
+            currentPath = newPath;
+          } else {
+            printLine(`bash: cd: ${arg}: No such directory`, "red");
+          }
+        }
+        break;
 
-    // Keep focus on input if user clicks anywhere in terminal
-    document.querySelector('.terminal-window').addEventListener('click', () => {
-        inputField.focus();
-    });
-  </script>
+      case "cat":
+        if (!arg) {
+          printLine("usage: cat [filename]");
+        } else {
+          const dirObj = getDir(currentPath);
+          if (dirObj && dirObj[arg]) {
+             if (dirObj[arg].type === "glitch") {
+                 printLine(dirObj[arg].content, "glitch");
+                 setTimeout(() => printLine("SYSTEM STABILIZED.", "green"), 1000);
+             } else if (dirObj[arg].type === "dir") {
+                 printLine(`cat: ${arg}: Is a directory`, "red");
+             } else {
+                 printLine(dirObj[arg].content);
+             }
+          } else {
+            printLine(`cat: ${arg}: No such file`, "red");
+          }
+        }
+        break;
+
+      case "clear":
+        // Remove everything before the input line
+        while(output.firstChild && output.firstChild !== inputContainer) {
+            output.removeChild(output.firstChild);
+        }
+        break;
+
+      case "sudo":
+        printLine("Nice try. The LLC revoked your root privileges after the 'Incident'.", "purple");
+        break;
+        
+      case "home":
+        window.location.href = "index.html";
+        break;
+
+      case "":
+        break;
+
+      default:
+        printLine(`bash: ${command}: command not found`, "red");
+    }
+  }
+
+  // --- UTILS ---
+  function getDir(path) {
+    return fileSystem[path];
+  }
+
+  function printLine(text, cssClass = "") {
+    const div = document.createElement('div');
+    div.className = `line ${cssClass}`;
+    div.innerHTML = text; // innerHTML to support color spans
+    output.insertBefore(div, inputContainer);
+    
+    // Auto Scroll
+    output.scrollTop = output.scrollHeight;
+  }
+
+  // --- EVENT LISTENER ---
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const val = this.value;
+      this.value = '';
+      executeCommand(val);
+      
+      // Update prompt path visual
+      document.querySelector('.prompt').innerText = `guest@exorobourii:${currentPath.replace("~", "")}$`;
+    }
+  });
+
+  // Focus trap
+  document.addEventListener('click', () => input.focus());
+
+</script>
 </body>
 </html>
