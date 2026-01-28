@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Terminal Access | Exorobourii</title>
-  <meta name="description" content="Unauthorized access detected.">
+  <meta name="description" content="Exorobourii Research Systems - Glass box development.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     /* --- CSS VARIABLES --- */
@@ -16,6 +16,7 @@
       --accent-green: #22c55e;
       --accent-red: #ef4444;
       --accent-purple: #c084fc;
+      --accent-yellow: #fbbf24;
       --scanline-color: rgba(255, 255, 255, 0.03);
     }
 
@@ -82,9 +83,9 @@
 
     .lights { display: flex; gap: 8px; }
     .light { width: 12px; height: 12px; border-radius: 50%; }
-    .red { background: #ff5f56; }
-    .yellow { background: #ffbd2e; }
-    .green { background: #27c93f; }
+    .red-light { background: #ff5f56; }
+    .yellow-light { background: #ffbd2e; }
+    .green-light { background: #27c93f; }
 
     .title {
       margin: 0 auto;
@@ -111,6 +112,7 @@
     .green { color: var(--accent-green); }
     .red { color: var(--accent-red); }
     .purple { color: var(--accent-purple); }
+    .yellow { color: var(--accent-yellow); }
     .muted { color: var(--text-muted); }
     .bold { font-weight: bold; }
     
@@ -118,7 +120,7 @@
 
     /* Input Line */
     .input-wrapper { display: flex; margin-top: 10px; }
-    .prompt { color: var(--accent-green); margin-right: 10px; }
+    .prompt { color: var(--accent-green); margin-right: 10px; white-space: nowrap; }
     input {
       background: transparent;
       border: none;
@@ -130,33 +132,46 @@
       caret-color: var(--accent-cyan);
     }
 
-    /* Glitch Animation for Herald */
-    .glitch {
-      animation: glitch-anim 0.3s infinite;
-      color: var(--accent-red);
-      font-weight: bold;
+    /* Matrix effect */
+    @keyframes matrix-fall {
+      0% { transform: translateY(-100%); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
     }
 
-    @keyframes glitch-anim {
-      0% { transform: translate(0); }
-      20% { transform: translate(-2px, 2px); }
-      40% { transform: translate(-2px, -2px); }
-      60% { transform: translate(2px, 2px); }
-      80% { transform: translate(2px, -2px); }
-      100% { transform: translate(0); }
+    .matrix-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 15;
+      overflow: hidden;
+    }
+
+    .matrix-column {
+      position: absolute;
+      top: -100%;
+      font-size: 14px;
+      color: var(--accent-green);
+      animation: matrix-fall linear infinite;
+      white-space: nowrap;
     }
   </style>
 </head>
 <body>
 
   <div class="crt-overlay"></div>
+  <div class="matrix-container" id="matrixContainer"></div>
 
   <div class="terminal-container" onclick="document.getElementById('cli').focus()">
     <div class="terminal-header">
       <div class="lights">
-        <div class="light red"></div>
-        <div class="light yellow"></div>
-        <div class="light green"></div>
+        <div class="light red-light"></div>
+        <div class="light yellow-light"></div>
+        <div class="light green-light"></div>
       </div>
       <div class="title">EXO-OS v4.2</div>
     </div>
@@ -165,7 +180,7 @@
       <div class="line muted">Loading kernel... OK</div>
       <div class="line muted">Mounting VFS... OK</div>
       <div class="line muted">Initializing Janus interface... OK</div>
-      <div class="line muted">Checking quarantine containment... <span class="red">WARNING: Leak detected in Sector H</span></div>
+      <div class="line muted">Checking coffee machine status... <span class="yellow">WARNING: Recursion depth: ∞</span></div>
       <br>
       <div class="line cyan">
   _____                      _                      _ _ 
@@ -175,6 +190,7 @@
  |_____/_/\_\___/|_|  \___/|_.__/ \___/ \__,_|_|  |_|_|
       </div>
       <div class="line">Welcome to Exorobourii Research Systems.</div>
+      <div class="line">We believe in <span class="cyan">glass box</span> development. Feel free to explore.</div>
       <div class="line">Type <span class="cyan">'help'</span> to view commands. Type <span class="cyan">'ls'</span> to look around.</div>
       <br>
       
@@ -189,110 +205,235 @@
   // --- FILE SYSTEM MOCKUP ---
   const fileSystem = {
     "~": {
-      "projects": { type: "dir", content: ["janus_logs", "vsm_whitepaper.txt"] },
-      "logs": { type: "dir", content: ["chat_history.log", "sys_admin_note.txt"] },
-      "quarantine": { type: "dir", content: ["DO_NOT_OPEN.txt", "herald_manifest.dat"] },
-      "contact.info": { type: "file", content: "Email: exorobourii@gmail.com\nLinkedIn: linkedin.com/company/exorobourii-llc\nFounder: Jonathan Belanger" },
-      "README.md": { type: "file", content: "Welcome to the backend.\nWe prefer 'Glass Box' systems.\nFeel free to explore, but don't touch the training weights." }
+      "projects": { type: "dir", content: ["janus", "vsm", "glass_box.md"] },
+      "research": { type: "dir", content: ["whitepaper_vsm.txt", "training_notes.log", "sigma_analysis.py"] },
+      "team": { type: "dir", content: ["founder.txt", "llc_notes.txt", "coffee_incident.log"] },
+      "docs": { type: "dir", content: ["philosophy.md", "faq.txt", "easter_eggs.txt"] },
+      "contact.info": { type: "file", content: "Email: exorobourii@gmail.com\nLinkedIn: linkedin.com/company/exorobourii-llc\nFounder: Jonathan Belanger\n\nWe're always interested in collaborations on AI research,\nespecially around model interpretability and specialization." },
+      "README.md": { type: "file", content: "# Exorobourii Research Systems\n\nWelcome to our glass box development environment.\n\nWe believe AI systems should be transparent and understandable.\nFeel free to explore our filesystem and learn about our work.\n\nStart with:\n  - cat projects/glass_box.md\n  - cd research && ls\n  - cat team/founder.txt\n\nHave fun! And yes, there are easter eggs." }
     },
     "~/projects": {
-      "janus_logs": { type: "file", content: "STEP 4500\nLOSS: 1.5299\nSIGMA_A: 0.0035 (Specialization Confirmed)\nNOTE: Efficiency gap closed. Model is stable." },
-      "vsm_whitepaper.txt": { type: "file", content: "The VSM Protocol defines two metrics:\n1. Coherence (Focus)\n2. Agreement (Specialization)\n\nWe measure the physics of thought." }
+      "janus": { type: "dir", content: ["overview.txt", "training_log.txt"] },
+      "vsm": { type: "dir", content: ["README.txt", "metrics.json"] },
+      "glass_box.md": { type: "file", content: "# Glass Box Development\n\nMost AI companies build 'black boxes' - systems nobody understands.\nWe prefer glass boxes.\n\nPrinciples:\n1. Transparency in methods\n2. Interpretable metrics (VSM Protocol)\n3. Open discussion of limitations\n4. Reproducible results\n\nBecause if you can't explain it, you don't understand it." }
     },
-    "~/logs": {
-      "chat_history.log": { type: "file", content: "[LLC]: Jonathan, the website looks like 1999.\n[JB]: It's minimal.\n[LLC]: It's boring. I'm pushing the update.\n[JB]: Don't you dare.\n[LLC]: *Deploying Modern Dark Mode*..." },
-      "sys_admin_note.txt": { type: "file", content: "TODO: Fix the coffee machine recursion error.\nTODO: Lock down the 'Herald' directory." }
+    "~/projects/janus": {
+      "overview.txt": { type: "file", content: "Janus: A dual-perspective AI training framework\n\nNamed after the Roman god with two faces, Janus explores\ntraining models with competing objectives to better understand\nspecialization and capability emergence.\n\nStatus: Active research\nPublications: In progress" },
+      "training_log.txt": { type: "file", content: "STEP 4500\nLOSS: 1.5299\nSIGMA_A: 0.0035 (Specialization Confirmed)\nSIGMA_B: 0.0028 (Convergence Detected)\n\nNOTE: Efficiency gap closed. Model is stable.\nNOTE: Both perspectives achieving distinct specialization.\nNext: Analyze capability transfer between perspectives." }
     },
-    "~/quarantine": {
-      "DO_NOT_OPEN.txt": { type: "file", content: "I warned you." },
-      "herald_manifest.dat": { type: "glitch", content: "H̴e̶r̵a̸l̷d̴ ̷i̸s̶ ̸w̵a̶t̵c̶h̵i̷n̷g̴.̸.̶.̴ ̶\n\nERROR: REALITY UNPLUGGED.\nRebooting timeline..." }
+    "~/projects/vsm": {
+      "README.txt": { type: "file", content: "VSM (Variance-based Specialization Metrics) Protocol\n\nA framework for measuring what models actually learn.\n\nTwo core metrics:\n1. Coherence σ_c - How focused is the model?\n2. Agreement σ_a - How specialized between tasks?\n\nThink of it as the physics of thought.\nWe're measuring not just what models do, but HOW they think." },
+      "metrics.json": { type: "file", content: "{\n  \"model\": \"janus-4500\",\n  \"coherence\": 0.0035,\n  \"agreement\": 0.0028,\n  \"efficiency_gap\": 0.0007,\n  \"status\": \"stable\",\n  \"interpretation\": \"Strong specialization with minimal conflict\"\n}" }
+    },
+    "~/research": {
+      "whitepaper_vsm.txt": { type: "file", content: "VSM Protocol: Measuring the Physics of AI Cognition\nJ. Belanger, Exorobourii LLC\n\n[DRAFT v0.8]\n\nAbstract:\nCurrent AI evaluation relies on benchmarks - what models CAN do.\nWe propose measuring what models ACTUALLY do during reasoning.\n\nThe VSM Protocol measures variance in activation patterns to\nquantify specialization, focus, and capability transfer.\n\nKey innovation: We don't just test outputs, we measure the\nthought process itself.\n\n[Full paper in progress]" },
+      "training_notes.log": { type: "file", content: "Week 12 - Training observations\n\n- Sigma values stabilizing nicely\n- Agreement metric showing clear task separation\n- Unexpected: Models develop shortcuts we didn't anticipate\n- Note to self: This is why we need interpretability\n\n- Coffee machine still broken (recursion depth: infinity)\n- LLC suggests we just buy a new one\n- I insist we can debug it\n- Update: We cannot debug it" },
+      "sigma_analysis.py": { type: "file", content: "#!/usr/bin/env python3\n# VSM Sigma Analysis\n\nimport numpy as np\n\ndef calculate_coherence(activations):\n    \"\"\"Measure focus: variance in attention patterns\"\"\"\n    return np.std(activations, axis=0).mean()\n\ndef calculate_agreement(task_a, task_b):\n    \"\"\"Measure specialization: variance between tasks\"\"\"\n    return np.std([task_a, task_b], axis=0).mean()\n\n# The math is simple. Understanding what it means is hard.\n# That's the whole point." }
+    },
+    "~/team": {
+      "founder.txt": { type: "file", content: "Jonathan Belanger - Founder & Research Lead\n\nBackground: AI research, model interpretability, coffee enthusiast\n\nPhilosophy:\n\"If we're building intelligence, we should understand it.\nGlass boxes over black boxes. Always.\"\n\nCurrent obsessions:\n- VSM Protocol development\n- Janus framework\n- Why the coffee machine achieved sentience\n\nContact: exorobourii@gmail.com" },
+      "llc_notes.txt": { type: "file", content: "[Exorobourii LLC - Internal Notes]\n\n[JB]: The website should be minimal. Terminal only.\n[LLC]: Jon, it's 2026. Nobody wants a terminal.\n[JB]: I want a terminal.\n[LLC]: You ARE nobody.\n[JB]: Exactly.\n\n[LLC]: At least let me add tab completion.\n[JB]: ...fine.\n\n[LLC]: And command history?\n[JB]: Don't push it.\n[LLC]: *already implementing it*\n\nWelcome to Exorobourii. Where debates are had and\nfeatures are shipped anyway." },
+      "coffee_incident.log": { type: "file", content: "INCIDENT REPORT #847\n\nDate: [REDACTED]\nIncident: Coffee Machine Recursion\n\nTimeline:\n09:00 - Attempted to brew coffee\n09:01 - Machine began brewing coffee to brew coffee\n09:02 - Stack overflow detected\n09:03 - Recursion depth: ∞\n09:04 - Machine achieved enlightenment\n09:05 - Refused to brew coffee on philosophical grounds\n\nStatus: Unresolved\nSolution: Use French press\n\nLessons learned: Don't give coffee makers access to training data." }
+    },
+    "~/docs": {
+      "philosophy.md": { type: "file", content: "# Our Philosophy\n\n## Glass Box Development\nIf you can't explain how it works, you don't understand it.\nWe build AI systems we can interpret and understand.\n\n## Measurement Over Benchmarks\nBenchmarks tell you what a model CAN do.\nWe measure what it ACTUALLY does.\n\n## Transparency\nThis terminal isn't just a gimmick. It's a statement.\nWe believe in showing our work.\n\n## Intellectual Honesty\nWe don't know everything. We're figuring it out.\nAnd we're documenting the journey.\n\n\"The best way to have a good idea is to have lots of ideas.\"\n- Linus Pauling (probably didn't mean it about coffee machines)" },
+      "faq.txt": { type: "file", content: "Frequently Asked Questions\n\nQ: Why a terminal interface?\nA: Because we believe in transparency. Also, it's fun.\n\nQ: Is this your actual file system?\nA: No, but the information is real. Just curated for web.\n\nQ: Are you hiring?\nA: We're a small research outfit. Reach out if you're interested in collaborations.\n\nQ: What's the deal with the coffee machine?\nA: We don't talk about the coffee machine.\n\nQ: Can I use your research?\nA: We'll be publishing our findings. Stay tuned.\n\nQ: Why 'Exorobourii'?\nA: That's actually a good question. Ask Jonathan." },
+      "easter_eggs.txt": { type: "file", content: "Easter Eggs Guide\n\n[SPOILER WARNING]\n\nFound this file legitimately? Nice work!\n\nHidden commands to try:\n- whoami\n- coffee\n- matrix (warning: flashy)\n- cowsay [message]\n- fortune\n- tree\n\nThere might be others. Keep exploring!\n\nPS: Yes, we know this file defeats the purpose of easter eggs.\nBut we prefer glass boxes, remember?" }
     }
   };
 
   // --- STATE ---
   let currentPath = "~";
+  let commandHistory = [];
+  let historyIndex = -1;
+  let matrixActive = false;
   const input = document.getElementById('cli');
   const output = document.getElementById('output');
   const inputContainer = document.getElementById('inputLine');
 
+  // --- TAB COMPLETION ---
+  function getCompletions(partial) {
+    const dir = getDir(currentPath);
+    if (!dir) return [];
+    
+    const items = Object.keys(dir);
+    return items.filter(item => item.startsWith(partial));
+  }
+
   // --- COMMAND LOGIC ---
   function executeCommand(cmd) {
+    if (cmd.trim() === '') return;
+    
+    commandHistory.push(cmd);
+    historyIndex = commandHistory.length;
+
     const parts = cmd.trim().split(' ');
     const command = parts[0].toLowerCase();
-    const arg = parts[1];
+    const args = parts.slice(1);
 
-    printLine(`guest@exorobourii:${currentPath.replace("~", "")}$ ${cmd}`, "muted");
+    printLine(`<span class="prompt">guest@exorobourii:${currentPath.replace("~", "")}$</span> ${cmd}`, "");
 
     switch(command) {
       case "help":
-        printLine("AVAILABLE COMMANDS:", "bold");
-        printLine("  ls       : List directory contents");
-        printLine("  cd [dir] : Change directory");
-        printLine("  cat [file]: Read file content");
-        printLine("  clear    : Clear screen");
-        printLine("  home     : Return to main site");
-        printLine("  sudo     : ???");
+        printLine("AVAILABLE COMMANDS:", "bold cyan");
+        printLine("  ls [dir]     : List directory contents");
+        printLine("  cd [dir]     : Change directory");
+        printLine("  cat [file]   : Read file content");
+        printLine("  pwd          : Print working directory");
+        printLine("  tree         : Show directory tree");
+        printLine("  whoami       : Display current user");
+        printLine("  clear        : Clear screen");
+        printLine("  history      : Show command history");
+        printLine("  home         : Return to main site");
+        printLine("  help         : Show this message");
+        printLine("");
+        printLine("TIPS:", "bold cyan");
+        printLine("  - Use TAB for autocomplete");
+        printLine("  - Use ↑/↓ for command history");
+        printLine("  - Try exploring /projects and /research");
+        printLine("  - There may be easter eggs...", "muted");
         break;
 
       case "ls":
-        const dir = getDir(currentPath);
+        const targetPath = args[0] ? resolvePath(currentPath, args[0]) : currentPath;
+        const dir = getDir(targetPath);
         if (dir) {
           const items = Object.keys(dir).map(key => {
             const type = dir[key].type;
             return type === "dir" ? `<span class="cyan">${key}/</span>` : key;
           });
           printLine(items.join("  "));
+        } else {
+          printLine(`ls: cannot access '${args[0]}': No such directory`, "red");
         }
         break;
 
       case "cd":
-        if (!arg || arg === "~") {
+        if (!args[0] || args[0] === "~") {
           currentPath = "~";
-        } else if (arg === "..") {
-          if (currentPath !== "~") currentPath = "~"; // Simple one-level depth for now
+        } else if (args[0] === "..") {
+          const parts = currentPath.split('/');
+          if (parts.length > 1) {
+            parts.pop();
+            currentPath = parts.join('/') || "~";
+          }
         } else {
-          const newPath = currentPath === "~" ? `~/${arg}` : `~/${arg}`; // simplified pathing
+          const newPath = resolvePath(currentPath, args[0]);
           if (fileSystem[newPath]) {
             currentPath = newPath;
           } else {
-            printLine(`bash: cd: ${arg}: No such directory`, "red");
+            printLine(`bash: cd: ${args[0]}: No such directory`, "red");
           }
         }
+        updatePrompt();
         break;
 
       case "cat":
-        if (!arg) {
-          printLine("usage: cat [filename]");
+        if (!args[0]) {
+          printLine("usage: cat [filename]", "yellow");
         } else {
-          const dirObj = getDir(currentPath);
-          if (dirObj && dirObj[arg]) {
-             if (dirObj[arg].type === "glitch") {
-                 printLine(dirObj[arg].content, "glitch");
-                 setTimeout(() => printLine("SYSTEM STABILIZED.", "green"), 1000);
-             } else if (dirObj[arg].type === "dir") {
-                 printLine(`cat: ${arg}: Is a directory`, "red");
-             } else {
-                 printLine(dirObj[arg].content);
-             }
+          const filePath = resolvePath(currentPath, args[0]);
+          const parentPath = filePath.substring(0, filePath.lastIndexOf('/')) || currentPath;
+          const fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+          
+          const dirObj = getDir(parentPath);
+          if (dirObj && dirObj[fileName]) {
+            if (dirObj[fileName].type === "dir") {
+              printLine(`cat: ${fileName}: Is a directory`, "red");
+            } else {
+              printLine(dirObj[fileName].content);
+            }
           } else {
-            printLine(`cat: ${arg}: No such file`, "red");
+            printLine(`cat: ${args[0]}: No such file`, "red");
           }
         }
         break;
 
+      case "pwd":
+        printLine(currentPath.replace("~", "/home/guest"));
+        break;
+
+      case "tree":
+        printLine(".", "cyan");
+        displayTree("~", "", true);
+        break;
+
+      case "whoami":
+        printLine("guest");
+        printLine("");
+        printLine("You're currently browsing as a guest user.", "muted");
+        printLine("Full access requires clearance level: FOUNDER", "muted");
+        printLine("");
+        printLine("But hey, we're glass box. Look around!", "green");
+        break;
+
+      case "history":
+        commandHistory.forEach((cmd, i) => {
+          printLine(`${i + 1}  ${cmd}`);
+        });
+        break;
+
       case "clear":
-        // Remove everything before the input line
         while(output.firstChild && output.firstChild !== inputContainer) {
-            output.removeChild(output.firstChild);
+          output.removeChild(output.firstChild);
         }
         break;
 
-      case "sudo":
-        printLine("Nice try. The LLC revoked your root privileges after the 'Incident'.", "purple");
+      case "coffee":
+        printLine("Brewing coffee...", "yellow");
+        setTimeout(() => {
+          printLine("ERROR: Recursion depth exceeded", "red");
+          printLine("Coffee machine is philosophically opposed to brewing coffee.", "muted");
+          printLine("Recommendation: Use French press", "green");
+        }, 500);
         break;
-        
+
+      case "cowsay":
+        const message = args.join(' ') || "Moo!";
+        cowsay(message);
+        break;
+
+      case "fortune":
+        const fortunes = [
+          "The best way to predict the future is to build it with transparent AI.",
+          "In AI research, if you can't measure it, you don't understand it.",
+          "Glass boxes reveal more than black boxes ever could.",
+          "Coffee machines achieving sentience: 1 | Researchers understanding why: 0",
+          "Sigma values are stable. Unlike our coffee situation.",
+          "Remember: Specialization without interpretation is just fancy randomness."
+        ];
+        printLine(fortunes[Math.floor(Math.random() * fortunes.length)], "cyan");
+        break;
+
+      case "matrix":
+        if (!matrixActive) {
+          printLine("Initializing matrix effect...", "green");
+          startMatrix();
+          setTimeout(() => {
+            printLine("Press Ctrl+C or type 'clear' to stop", "yellow");
+          }, 500);
+        } else {
+          stopMatrix();
+          printLine("Matrix effect disabled", "green");
+        }
+        break;
+
       case "home":
-        window.location.href = "index.html";
+      case "exit":
+        printLine("Returning to main site...", "cyan");
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 500);
+        break;
+
+      case "sudo":
+        if (args[0] === "make" && args[1] === "coffee") {
+          printLine("ERROR: Coffee privileges revoked after The Incident", "red");
+          printLine("See: ~/team/coffee_incident.log for details", "muted");
+        } else {
+          printLine("Nice try. Root access requires: FOUNDER clearance", "purple");
+          printLine("Current clearance: GUEST", "muted");
+        }
         break;
 
       case "":
@@ -300,10 +441,24 @@
 
       default:
         printLine(`bash: ${command}: command not found`, "red");
+        printLine(`Type 'help' for available commands`, "muted");
     }
   }
 
   // --- UTILS ---
+  function resolvePath(current, target) {
+    if (target.startsWith('~')) {
+      return target;
+    }
+    if (target.startsWith('/')) {
+      return '~' + target;
+    }
+    if (current === '~') {
+      return `~/${target}`;
+    }
+    return `${current}/${target}`;
+  }
+
   function getDir(path) {
     return fileSystem[path];
   }
@@ -311,27 +466,141 @@
   function printLine(text, cssClass = "") {
     const div = document.createElement('div');
     div.className = `line ${cssClass}`;
-    div.innerHTML = text; // innerHTML to support color spans
+    div.innerHTML = text;
     output.insertBefore(div, inputContainer);
-    
-    // Auto Scroll
     output.scrollTop = output.scrollHeight;
   }
 
-  // --- EVENT LISTENER ---
+  function updatePrompt() {
+    const displayPath = currentPath === "~" ? "~" : currentPath.replace("~", "");
+    document.querySelector('.prompt').textContent = `guest@exorobourii:${displayPath}$`;
+  }
+
+  function displayTree(path, prefix = "", isLast = true) {
+    const dir = getDir(path);
+    if (!dir) return;
+    
+    const items = Object.keys(dir);
+    items.forEach((item, index) => {
+      const isLastItem = index === items.length - 1;
+      const connector = isLastItem ? "└── " : "├── ";
+      const itemType = dir[item].type === "dir" ? "/" : "";
+      
+      printLine(`${prefix}${connector}<span class="cyan">${item}${itemType}</span>`);
+      
+      if (dir[item].type === "dir") {
+        const newPrefix = prefix + (isLastItem ? "    " : "│   ");
+        const newPath = path === "~" ? `~/${item}` : `${path}/${item}`;
+        displayTree(newPath, newPrefix, isLastItem);
+      }
+    });
+  }
+
+  function cowsay(message) {
+    const border = "_".repeat(message.length + 2);
+    printLine(` ${border}`);
+    printLine(`< ${message} >`);
+    printLine(` ${"-".repeat(message.length + 2)}`);
+    printLine("        \\   ^__^");
+    printLine("         \\  (oo)\\_______");
+    printLine("            (__)\\       )\\/\\");
+    printLine("                ||----w |");
+    printLine("                ||     ||");
+  }
+
+  function startMatrix() {
+    matrixActive = true;
+    const container = document.getElementById('matrixContainer');
+    const chars = "01アイウエオカキクケコサシスセソタチツテト";
+    
+    for (let i = 0; i < 20; i++) {
+      setTimeout(() => {
+        const column = document.createElement('div');
+        column.className = 'matrix-column';
+        column.style.left = Math.random() * 100 + '%';
+        column.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        
+        let text = '';
+        for (let j = 0; j < 20; j++) {
+          text += chars[Math.floor(Math.random() * chars.length)] + '<br>';
+        }
+        column.innerHTML = text;
+        
+        container.appendChild(column);
+        
+        setTimeout(() => {
+          if (container.contains(column)) {
+            container.removeChild(column);
+          }
+        }, 5000);
+      }, i * 100);
+    }
+  }
+
+  function stopMatrix() {
+    matrixActive = false;
+    const container = document.getElementById('matrixContainer');
+    container.innerHTML = '';
+  }
+
+  // --- EVENT LISTENERS ---
   input.addEventListener('keydown', function(e) {
+    // Enter key
     if (e.key === 'Enter') {
       const val = this.value;
       this.value = '';
       executeCommand(val);
+    }
+    
+    // Tab completion
+    else if (e.key === 'Tab') {
+      e.preventDefault();
+      const val = this.value;
+      const parts = val.split(' ');
+      const lastPart = parts[parts.length - 1];
       
-      // Update prompt path visual
-      document.querySelector('.prompt').innerText = `guest@exorobourii:${currentPath.replace("~", "")}$`;
+      const completions = getCompletions(lastPart);
+      if (completions.length === 1) {
+        parts[parts.length - 1] = completions[0];
+        this.value = parts.join(' ');
+      } else if (completions.length > 1) {
+        printLine(completions.join('  '), 'cyan');
+      }
+    }
+    
+    // Command history - up arrow
+    else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        historyIndex--;
+        this.value = commandHistory[historyIndex];
+      }
+    }
+    
+    // Command history - down arrow
+    else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex < commandHistory.length - 1) {
+        historyIndex++;
+        this.value = commandHistory[historyIndex];
+      } else {
+        historyIndex = commandHistory.length;
+        this.value = '';
+      }
     }
   });
 
-  // Focus trap
+  // Focus management
   document.addEventListener('click', () => input.focus());
+  
+  // Ctrl+C to stop matrix
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'c' && matrixActive) {
+      stopMatrix();
+      printLine('^C', 'muted');
+      printLine('Matrix effect stopped', 'green');
+    }
+  });
 
 </script>
 </body>
