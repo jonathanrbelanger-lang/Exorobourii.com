@@ -2,85 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Terminal Access | Exorobourii</title>
+  <title>Terminal Access | Exorobourii Systems</title>
   <meta name="description" content="Exorobourii Research Systems - Glass box development.">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
-    /* --- CSS VARIABLES --- */
+    /* --- FONTS & VARS --- */
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=VT323&display=swap');
+
     :root {
       --bg-color: #050505;
-      --terminal-bg: #0a0a0a;
-      --text-main: #e2e8f0;
-      --text-muted: #64748b;
-      --accent-cyan: #38bdf8;
-      --accent-green: #22c55e;
-      --accent-red: #ef4444;
-      --accent-purple: #c084fc;
-      --accent-yellow: #fbbf24;
-      --scanline-color: rgba(255, 255, 255, 0.03);
-      --nav-bg: #1e293b;
+      --glass-color: #101214;
+      --scan-color: rgba(0, 0, 0, 0.5);
+      --glitch-color: rgba(255, 255, 255, 0.1);
+      
+      /* Theme Colors (Default: Amber/Green mix for retro feel) */
+      --phosphor-main: #38bdf8; /* Cyan */
+      --phosphor-dim: #0ea5e9;
+      --phosphor-alert: #ef4444;
+      --phosphor-success: #22c55e;
+      --phosphor-warn: #fbbf24;
+      
+      --crt-curvature: 3px;
     }
 
-    /* --- GLOBAL LAYOUT --- */
+    /* --- GLOBAL RESET --- */
+    * { box-sizing: border-box; }
+    
     body {
       margin: 0;
       height: 100vh;
+      width: 100vw;
       background-color: var(--bg-color);
-      color: var(--text-main);
-      font-family: 'Courier New', Courier, monospace;
+      color: var(--phosphor-main);
+      font-family: 'Fira Code', monospace;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* --- NAVIGATION --- */
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background-color: var(--nav-bg);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      z-index: 20;
-    }
-
-    .brand {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--text-main);
-      text-decoration: none;
-      letter-spacing: -0.02em;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--accent-cyan);
-    }
-
-    /* --- MAIN CONTENT WRAPPER --- */
-    .main-wrapper {
-      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
+      perspective: 1000px; /* For 3D CRT effect */
+    }
+
+    /* --- CRT MONITOR CHASSIS --- */
+    .monitor-casing {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: #000;
       overflow: hidden;
     }
 
-    /* --- CRT MONITOR EFFECT --- */
-    .crt-overlay {
+    /* --- SCREEN EFFECTS (The "Glass") --- */
+    .screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background-color: var(--glass-color);
+      overflow: hidden;
+      /* CRT Curvature & Vignette */
+      box-shadow: inset 0 0 100px rgba(0,0,0,0.9);
+      animation: turnOn 4s linear;
+    }
+
+    /* Scanlines */
+    .scanlines {
       position: absolute;
       top: 0;
       left: 0;
@@ -88,597 +72,755 @@
       height: 100%;
       background: linear-gradient(
         to bottom,
-        var(--scanline-color) 50%,
-        rgba(0, 0, 0, 0.1) 50%
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0,0,0,0.2) 50%,
+        rgba(0,0,0,0.2)
       );
       background-size: 100% 4px;
       pointer-events: none;
-      z-index: 10;
-      animation: flicker 0.15s infinite;
+      z-index: 50;
     }
 
-    @keyframes flicker {
-      0% { opacity: 0.9; }
-      50% { opacity: 0.95; }
-      100% { opacity: 0.9; }
-    }
-
-    /* --- TERMINAL WINDOW --- */
-    .terminal-container {
-      width: 90%;
-      max-width: 1000px;
-      height: 80vh;
-      background-color: var(--terminal-bg);
-      border: 1px solid #333;
-      border-radius: 6px;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      z-index: 5;
-    }
-
-    /* Header */
-    .terminal-header {
-      background: #111;
-      padding: 0.5rem 1rem;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #333;
-    }
-
-    .lights { display: flex; gap: 8px; }
-    .light { width: 12px; height: 12px; border-radius: 50%; }
-    .red-light { background: #ff5f56; }
-    .yellow-light { background: #ffbd2e; }
-    .green-light { background: #27c93f; }
-
-    .title {
-      margin: 0 auto;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    /* Body */
-    .terminal-body {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-      font-size: 1rem;
-      line-height: 1.5;
-      scrollbar-width: none; /* Hide scrollbar Firefox */
-    }
-    .terminal-body::-webkit-scrollbar { display: none; }
-
-    /* Text Styles */
-    .line { margin-bottom: 4px; white-space: pre-wrap; word-wrap: break-word; }
-    .cyan { color: var(--accent-cyan); }
-    .green { color: var(--accent-green); }
-    .red { color: var(--accent-red); }
-    .purple { color: var(--accent-purple); }
-    .yellow { color: var(--accent-yellow); }
-    .muted { color: var(--text-muted); }
-    .bold { font-weight: bold; }
-    
-    a { color: inherit; text-decoration: underline; }
-
-    /* Input Line */
-    .input-wrapper { display: flex; margin-top: 10px; }
-    .prompt { color: var(--accent-green); margin-right: 10px; white-space: nowrap; }
-    input {
-      background: transparent;
-      border: none;
-      color: var(--text-main);
-      font-family: inherit;
-      font-size: inherit;
-      flex: 1;
-      outline: none;
-      caret-color: var(--accent-cyan);
-    }
-
-    /* Matrix effect */
-    @keyframes matrix-fall {
-      0% { transform: translateY(-100%); opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { transform: translateY(100vh); opacity: 0; }
-    }
-
-    .matrix-container {
-      position: fixed;
+    /* RGB Shift / Chromatic Aberration */
+    .rgb-split {
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: 15;
-      overflow: hidden;
+      z-index: 51;
+      background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%);
+      mix-blend-mode: overlay;
     }
 
-    .matrix-column {
+    /* Flicker Animation */
+    @keyframes flicker {
+      0% { opacity: 0.97; }
+      5% { opacity: 0.95; }
+      10% { opacity: 0.9; }
+      15% { opacity: 0.95; }
+      20% { opacity: 0.99; }
+      50% { opacity: 0.95; }
+      80% { opacity: 0.9; }
+      100% { opacity: 0.97; }
+    }
+
+    @keyframes turnOn {
+      0% { transform: scale(1, 0.002); opacity: 0; filter: brightness(0); }
+      20% { transform: scale(1, 0.002); opacity: 1; filter: brightness(3); }
+      50% { transform: scale(1, 0.002); opacity: 1; filter: brightness(1); }
+      70% { transform: scale(1, 1); opacity: 1; }
+      100% { transform: scale(1, 1); opacity: 1; }
+    }
+
+    /* --- CONTENT LAYERS --- */
+    
+    /* 1. Matrix Canvas (Background) */
+    #matrixCanvas {
       position: absolute;
-      top: -100%;
-      font-size: 14px;
-      color: var(--accent-green);
-      animation: matrix-fall linear infinite;
-      white-space: nowrap;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.15; /* Subtle background */
+      z-index: 1;
     }
 
-    /* Mobile Responsiveness */
+    /* 2. Terminal Container */
+    .terminal-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 2rem;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      text-shadow: 0 0 5px var(--phosphor-dim);
+      animation: flicker 0.15s infinite;
+    }
+
+    /* Navigation (Hidden initially) */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--phosphor-dim);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      opacity: 0; /* Hidden until boot complete */
+      transition: opacity 2s ease;
+    }
+
+    .nav-links a {
+      color: var(--phosphor-dim);
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .nav-links a:hover {
+      color: var(--phosphor-main);
+      text-shadow: 0 0 8px var(--phosphor-main);
+      text-decoration: underline;
+    }
+
+    /* Terminal Output Area */
+    #output {
+      flex: 1;
+      overflow-y: auto;
+      font-size: 1rem;
+      line-height: 1.4;
+      scrollbar-width: none;
+      padding-bottom: 20px;
+    }
+    #output::-webkit-scrollbar { display: none; }
+
+    /* Input Area */
+    .input-line {
+      display: flex;
+      align-items: center;
+      background: rgba(0,0,0,0.6);
+      padding: 10px 0;
+    }
+    
+    .prompt {
+      color: var(--phosphor-success);
+      margin-right: 10px;
+      white-space: nowrap;
+      font-weight: bold;
+    }
+
+    input#cli {
+      background: transparent;
+      border: none;
+      color: var(--phosphor-main);
+      font-family: 'Fira Code', monospace;
+      font-size: 1rem;
+      flex: 1;
+      outline: none;
+      text-shadow: 0 0 5px var(--phosphor-main);
+      caret-color: var(--phosphor-warn);
+    }
+
+    /* --- UTILITY CLASSES --- */
+    .line { margin-bottom: 4px; white-space: pre-wrap; word-wrap: break-word; }
+    .cyan { color: var(--phosphor-main); }
+    .green { color: var(--phosphor-success); }
+    .red { color: var(--phosphor-alert); }
+    .yellow { color: var(--phosphor-warn); }
+    .dim { color: #64748b; }
+    .bold { font-weight: 600; }
+    .glitch-text { animation: glitch 1s infinite; }
+    
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
+
+    /* --- BIOS BOOT SCREEN --- */
+    #boot-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 100;
+      padding: 40px;
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      color: var(--phosphor-main);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .hidden { display: none !important; }
+
+    /* --- MOBILE --- */
     @media (max-width: 768px) {
-      nav {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
-      }
-
-      .nav-links {
-        gap: 1rem;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .terminal-container {
-        width: 95%;
-        height: 75vh;
-      }
+      .terminal-wrapper { padding: 10px; }
+      nav { flex-direction: column; gap: 10px; }
+      .nav-links { display: flex; flex-wrap: wrap; gap: 10px; }
+      .nav-links a { margin-left: 0; margin-right: 15px; }
     }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a href="index.html" class="brand">Exorobourii</a>
-    <div class="nav-links">
-      <a href="mission.html">Mission</a>
-      <a href="projects.html">Projects</a>
-      <a href="staff.html">Staff</a>
-      <a href="helpdesk.html">Helpdesk</a>
-      <a href="about.html">About</a>
-    </div>
-  </nav>
-
-  <div class="main-wrapper">
-    <div class="crt-overlay"></div>
-    <div class="matrix-container" id="matrixContainer"></div>
-
-    <div class="terminal-container" onclick="document.getElementById('cli').focus()">
-    <div class="terminal-header">
-      <div class="lights">
-        <div class="light red-light"></div>
-        <div class="light yellow-light"></div>
-        <div class="light green-light"></div>
-      </div>
-      <div class="title">EXO-OS v4.2</div>
-    </div>
+<div class="monitor-casing">
+  <div class="screen">
+    <div class="scanlines"></div>
+    <div class="rgb-split"></div>
     
-    <div class="terminal-body" id="output">
-      <div class="line muted">Loading kernel... OK</div>
-      <div class="line muted">Mounting VFS... OK</div>
-      <div class="line muted">Initializing Janus interface... OK</div>
-      <div class="line muted">Checking coffee machine status... <span class="yellow">WARNING: Recursion depth: ∞</span></div>
-      <br>
-      <div class="line cyan">
-  _____                      _                      _ _ 
- | ____|_  _____  _ __ ___ | |__   ___  _   _ _ __(_|_)
- |  _| \ \/ / _ \| '__/ _ \| '_ \ / _ \| | | | '__| | |
- | |___ >  < (_) | | | (_) | |_) | (_) | |_| | |  | | |
- |_____/_/\_\___/|_|  \___/|_.__/ \___/ \__,_|_|  |_|_|
+    <!-- CANVAS LAYER -->
+    <canvas id="matrixCanvas"></canvas>
+
+    <!-- BOOT SEQUENCE LAYER -->
+    <div id="boot-screen">
+      <div id="boot-text"></div>
+      <div id="click-to-start" style="margin-top: auto; text-align: center; animation: blink 1s infinite;" class="hidden">
+        [ PRESS ANY KEY TO INITIALIZE SYSTEM ]
       </div>
-      <div class="line">Welcome to Exorobourii Research Systems.</div>
-      <div class="line">We believe in <span class="cyan">glass box</span> development. Feel free to explore.</div>
-      <div class="line">Type <span class="cyan">'help'</span> to view commands. Type <span class="cyan">'ls'</span> to look around.</div>
-      <br>
+    </div>
+
+    <!-- MAIN TERMINAL LAYER -->
+    <div class="terminal-wrapper hidden" id="main-terminal">
+      <nav id="navbar">
+        <div class="brand">EXOROBOURII RESEARCH</div>
+        <div class="nav-links">
+          <a href="mission.html">Mission</a>
+          <a href="projects.html">Projects</a>
+          <a href="staff.html">Staff</a>
+          <a href="helpdesk.html">Helpdesk</a>
+        </div>
+      </nav>
+
+      <div id="output"></div>
       
-      <div class="input-wrapper" id="inputLine">
-        <span class="prompt">guest@exorobourii:~$</span>
-        <input type="text" id="cli" autocomplete="off" autofocus>
+      <div class="input-line">
+        <span class="prompt" id="prompt-span">guest@exorobourii:~$</span>
+        <input type="text" id="cli" autocomplete="off" spellcheck="false">
       </div>
     </div>
   </div>
+</div>
 
 <script>
-  // --- FILE SYSTEM MOCKUP ---
-  const fileSystem = {
-    "~": {
-      "projects": { type: "dir", content: ["janus", "vsm", "glass_box.md"] },
-      "research": { type: "dir", content: ["whitepaper_vsm.txt", "training_notes.log", "sigma_analysis.py"] },
-      "team": { type: "dir", content: ["founder.txt", "llc_notes.txt", "coffee_incident.log"] },
-      "docs": { type: "dir", content: ["philosophy.md", "faq.txt", "easter_eggs.txt"] },
-      "contact.info": { type: "file", content: "Email: exorobourii@gmail.com\nLinkedIn: linkedin.com/company/exorobourii-llc\nFounder: Jonathan Belanger\n\nWe're always interested in collaborations on AI research,\nespecially around model interpretability and specialization." },
-      "README.md": { type: "file", content: "# Exorobourii Research Systems\n\nWelcome to our glass box development environment.\n\nWe believe AI systems should be transparent and understandable.\nFeel free to explore our filesystem and learn about our work.\n\nStart with:\n  - cat projects/glass_box.md\n  - cd research && ls\n  - cat team/founder.txt\n\nHave fun! And yes, there are easter eggs." }
-    },
-    "~/projects": {
-      "janus": { type: "dir", content: ["overview.txt", "training_log.txt"] },
-      "vsm": { type: "dir", content: ["README.txt", "metrics.json"] },
-      "glass_box.md": { type: "file", content: "# Glass Box Development\n\nMost AI companies build 'black boxes' - systems nobody understands.\nWe prefer glass boxes.\n\nPrinciples:\n1. Transparency in methods\n2. Interpretable metrics (VSM Protocol)\n3. Open discussion of limitations\n4. Reproducible results\n\nBecause if you can't explain it, you don't understand it." }
-    },
-    "~/projects/janus": {
-      "overview.txt": { type: "file", content: "Janus: A dual-perspective AI training framework\n\nNamed after the Roman god with two faces, Janus explores\ntraining models with competing objectives to better understand\nspecialization and capability emergence.\n\nStatus: Active research\nPublications: In progress" },
-      "training_log.txt": { type: "file", content: "STEP 4500\nLOSS: 1.5299\nSIGMA_A: 0.0035 (Specialization Confirmed)\nSIGMA_B: 0.0028 (Convergence Detected)\n\nNOTE: Efficiency gap closed. Model is stable.\nNOTE: Both perspectives achieving distinct specialization.\nNext: Analyze capability transfer between perspectives." }
-    },
-    "~/projects/vsm": {
-      "README.txt": { type: "file", content: "VSM (Variance-based Specialization Metrics) Protocol\n\nA framework for measuring what models actually learn.\n\nTwo core metrics:\n1. Coherence σ_c - How focused is the model?\n2. Agreement σ_a - How specialized between tasks?\n\nThink of it as the physics of thought.\nWe're measuring not just what models do, but HOW they think." },
-      "metrics.json": { type: "file", content: "{\n  \"model\": \"janus-4500\",\n  \"coherence\": 0.0035,\n  \"agreement\": 0.0028,\n  \"efficiency_gap\": 0.0007,\n  \"status\": \"stable\",\n  \"interpretation\": \"Strong specialization with minimal conflict\"\n}" }
-    },
-    "~/research": {
-      "whitepaper_vsm.txt": { type: "file", content: "VSM Protocol: Measuring the Physics of AI Cognition\nJ. Belanger, Exorobourii LLC\n\n[DRAFT v0.8]\n\nAbstract:\nCurrent AI evaluation relies on benchmarks - what models CAN do.\nWe propose measuring what models ACTUALLY do during reasoning.\n\nThe VSM Protocol measures variance in activation patterns to\nquantify specialization, focus, and capability transfer.\n\nKey innovation: We don't just test outputs, we measure the\nthought process itself.\n\n[Full paper in progress]" },
-      "training_notes.log": { type: "file", content: "Week 12 - Training observations\n\n- Sigma values stabilizing nicely\n- Agreement metric showing clear task separation\n- Unexpected: Models develop shortcuts we didn't anticipate\n- Note to self: This is why we need interpretability\n\n- Coffee machine still broken (recursion depth: infinity)\n- LLC suggests we just buy a new one\n- I insist we can debug it\n- Update: We cannot debug it" },
-      "sigma_analysis.py": { type: "file", content: "#!/usr/bin/env python3\n# VSM Sigma Analysis\n\nimport numpy as np\n\ndef calculate_coherence(activations):\n    \"\"\"Measure focus: variance in attention patterns\"\"\"\n    return np.std(activations, axis=0).mean()\n\ndef calculate_agreement(task_a, task_b):\n    \"\"\"Measure specialization: variance between tasks\"\"\"\n    return np.std([task_a, task_b], axis=0).mean()\n\n# The math is simple. Understanding what it means is hard.\n# That's the whole point." }
-    },
-    "~/team": {
-      "founder.txt": { type: "file", content: "Jonathan Belanger - Founder & Research Lead\n\nBackground: AI research, model interpretability, coffee enthusiast\n\nPhilosophy:\n\"If we're building intelligence, we should understand it.\nGlass boxes over black boxes. Always.\"\n\nCurrent obsessions:\n- VSM Protocol development\n- Janus framework\n- Why the coffee machine achieved sentience\n\nContact: exorobourii@gmail.com" },
-      "llc_notes.txt": { type: "file", content: "[Exorobourii LLC - Internal Notes]\n\n[JB]: The website should be minimal. Terminal only.\n[LLC]: Jon, it's 2026. Nobody wants a terminal.\n[JB]: I want a terminal.\n[LLC]: You ARE nobody.\n[JB]: Exactly.\n\n[LLC]: At least let me add tab completion.\n[JB]: ...fine.\n\n[LLC]: And command history?\n[JB]: Don't push it.\n[LLC]: *already implementing it*\n\nWelcome to Exorobourii. Where debates are had and\nfeatures are shipped anyway." },
-      "coffee_incident.log": { type: "file", content: "INCIDENT REPORT #847\n\nDate: [REDACTED]\nIncident: Coffee Machine Recursion\n\nTimeline:\n09:00 - Attempted to brew coffee\n09:01 - Machine began brewing coffee to brew coffee\n09:02 - Stack overflow detected\n09:03 - Recursion depth: ∞\n09:04 - Machine achieved enlightenment\n09:05 - Refused to brew coffee on philosophical grounds\n\nStatus: Unresolved\nSolution: Use French press\n\nLessons learned: Don't give coffee makers access to training data." }
-    },
-    "~/docs": {
-      "philosophy.md": { type: "file", content: "# Our Philosophy\n\n## Glass Box Development\nIf you can't explain how it works, you don't understand it.\nWe build AI systems we can interpret and understand.\n\n## Measurement Over Benchmarks\nBenchmarks tell you what a model CAN do.\nWe measure what it ACTUALLY does.\n\n## Transparency\nThis terminal isn't just a gimmick. It's a statement.\nWe believe in showing our work.\n\n## Intellectual Honesty\nWe don't know everything. We're figuring it out.\nAnd we're documenting the journey.\n\n\"The best way to have a good idea is to have lots of ideas.\"\n- Linus Pauling (probably didn't mean it about coffee machines)" },
-      "faq.txt": { type: "file", content: "Frequently Asked Questions\n\nQ: Why a terminal interface?\nA: Because we believe in transparency. Also, it's fun.\n\nQ: Is this your actual file system?\nA: No, but the information is real. Just curated for web.\n\nQ: Are you hiring?\nA: We're a small research outfit. Reach out if you're interested in collaborations.\n\nQ: What's the deal with the coffee machine?\nA: We don't talk about the coffee machine.\n\nQ: Can I use your research?\nA: We'll be publishing our findings. Stay tuned.\n\nQ: Why 'Exorobourii'?\nA: That's actually a good question. Ask Jonathan." },
-      "easter_eggs.txt": { type: "file", content: "Easter Eggs Guide\n\n[SPOILER WARNING]\n\nFound this file legitimately? Nice work!\n\nHidden commands to try:\n- whoami\n- coffee\n- matrix (warning: flashy)\n- cowsay [message]\n- fortune\n- tree\n\nThere might be others. Keep exploring!\n\nPS: Yes, we know this file defeats the purpose of easter eggs.\nBut we prefer glass boxes, remember?" }
+/**
+ * EXOROBOURII HYPER-TERMINAL
+ * Single-file architecture.
+ * 
+ * 1. AudioEngine: Web Audio API synthesizer (No external assets)
+ * 2. Visuals: Canvas Matrix & CRT effects
+ * 3. System: File system, command parsing, boot sequence
+ */
+
+/* --- 1. AUDIO ENGINE (Synthesizer) --- */
+const AudioEngine = {
+  ctx: null,
+  gain: null,
+  enabled: true,
+
+  init() {
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AudioContext();
+    this.gain = this.ctx.createGain();
+    this.gain.connect(this.ctx.destination);
+    this.gain.gain.value = 0.1; // Master volume
+  },
+
+  playTone(freq, type, duration, vol = 1) {
+    if (!this.ctx || !this.enabled) return;
+    const osc = this.ctx.createOscillator();
+    const gn = this.ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+    gn.gain.setValueAtTime(vol, this.ctx.currentTime);
+    gn.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+    osc.connect(gn);
+    gn.connect(this.gain);
+    osc.start();
+    osc.stop(this.ctx.currentTime + duration);
+  },
+
+  playKeySound() {
+    // Mechanical switch click simulation
+    this.playTone(800 + Math.random() * 200, 'square', 0.05, 0.05);
+    this.playTone(100, 'sawtooth', 0.05, 0.05);
+  },
+
+  playEnterSound() {
+    this.playTone(600, 'square', 0.1, 0.1);
+    this.playTone(300, 'sine', 0.2, 0.1);
+  },
+
+  playBootSound() {
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gn = this.ctx.createGain();
+    osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 2);
+    gn.gain.setValueAtTime(0, this.ctx.currentTime);
+    gn.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + 1);
+    gn.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 3);
+    osc.connect(gn);
+    gn.connect(this.gain);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 3);
+  },
+
+  playError() {
+    this.playTone(150, 'sawtooth', 0.3, 0.2);
+    this.playTone(100, 'square', 0.3, 0.2);
+  },
+
+  playHardDriveNoise() {
+    if (!this.ctx || !this.enabled) return;
+    // Random clicks to simulate HDD seek
+    const count = Math.floor(Math.random() * 5) + 1;
+    for(let i=0; i<count; i++) {
+      setTimeout(() => {
+        this.playTone(2000 + Math.random()*1000, 'square', 0.01, 0.02);
+      }, i * 50);
     }
-  };
-
-  // --- STATE ---
-  let currentPath = "~";
-  let commandHistory = [];
-  let historyIndex = -1;
-  let matrixActive = false;
-  const input = document.getElementById('cli');
-  const output = document.getElementById('output');
-  const inputContainer = document.getElementById('inputLine');
-
-  // --- TAB COMPLETION ---
-  function getCompletions(partial) {
-    const dir = getDir(currentPath);
-    if (!dir) return [];
-    
-    const items = Object.keys(dir);
-    return items.filter(item => item.startsWith(partial));
   }
+};
 
-  // --- COMMAND LOGIC ---
-  function executeCommand(cmd) {
-    if (cmd.trim() === '') return;
+/* --- 2. VISUALS (Matrix Canvas) --- */
+const Matrix = {
+  canvas: document.getElementById('matrixCanvas'),
+  ctx: null,
+  chars: "01アイウエオカキクケコサシスセソタチツテトEXOROBOURII",
+  drops: [],
+  fontSize: 14,
+  columns: 0,
+  interval: null,
+
+  init() {
+    this.ctx = this.canvas.getContext('2d');
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
     
-    commandHistory.push(cmd);
-    historyIndex = commandHistory.length;
+    // Initialize drops
+    for (let i = 0; i < this.columns; i++) {
+      this.drops[i] = Math.random() * -100; // Start above screen
+    }
+    
+    this.start();
+  },
 
-    const parts = cmd.trim().split(' ');
-    const command = parts[0].toLowerCase();
+  resize() {
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+    this.columns = this.canvas.width / this.fontSize;
+  },
+
+  draw() {
+    // Fade effect
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.ctx.fillStyle = '#0F0'; // Green text
+    this.ctx.font = this.fontSize + 'px monospace';
+
+    for (let i = 0; i < this.drops.length; i++) {
+      const text = this.chars.charAt(Math.floor(Math.random() * this.chars.length));
+      
+      // Randomly color some characters cyan (Exorobourii brand)
+      if (Math.random() > 0.98) this.ctx.fillStyle = '#38bdf8';
+      else this.ctx.fillStyle = '#0ea5e9';
+
+      this.ctx.fillText(text, i * this.fontSize, this.drops[i] * this.fontSize);
+
+      if (this.drops[i] * this.fontSize > this.canvas.height && Math.random() > 0.975) {
+        this.drops[i] = 0;
+      }
+      this.drops[i]++;
+    }
+  },
+
+  start() {
+    if(this.interval) clearInterval(this.interval);
+    this.interval = setInterval(() => this.draw(), 33);
+  },
+
+  stop() {
+    clearInterval(this.interval);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+};
+
+/* --- 3. FILE SYSTEM & DATA --- */
+const FileSystem = {
+  "~": {
+    "projects": { type: "dir", content: ["janus", "vsm", "glass_box.md"] },
+    "research": { type: "dir", content: ["whitepaper_vsm.txt", "training_notes.log", "sigma_analysis.py"] },
+    "team": { type: "dir", content: ["founder.txt", "llc_notes.txt", "coffee_incident.log"] },
+    "docs": { type: "dir", content: ["philosophy.md", "faq.txt", "secrets.enc"] },
+    "README.md": { type: "file", content: "# Exorobourii Research Systems\n\nWelcome to our glass box development environment.\n\nWe believe AI systems should be transparent and understandable.\nFeel free to explore our filesystem and learn about our work.\n\nStart with:\n  - cat projects/glass_box.md\n  - cd research && ls\n  - cat team/founder.txt\n\nType 'help' for commands." }
+  },
+  "~/projects": {
+    "janus": { type: "dir", content: ["overview.txt", "training_log.txt"] },
+    "vsm": { type: "dir", content: ["README.txt", "metrics.json"] },
+    "glass_box.md": { type: "file", content: "# Glass Box Development\n\nMost AI companies build 'black boxes'.\nWe prefer glass boxes.\n\nPrinciples:\n1. Transparency in methods\n2. Interpretable metrics (VSM Protocol)\n3. Open discussion of limitations\n\nBecause if you can't explain it, you don't understand it." }
+  },
+  "~/projects/janus": {
+    "overview.txt": { type: "file", content: "Janus: A dual-perspective AI training framework.\n\nStatus: Active research\nPublications: In progress" },
+    "training_log.txt": { type: "file", content: "STEP 4500\nLOSS: 1.5299\nSIGMA_A: 0.0035 (Specialization Confirmed)\nSIGMA_B: 0.0028 (Convergence Detected)\n\nNOTE: Efficiency gap closed. Model is stable." }
+  },
+  "~/projects/vsm": {
+    "README.txt": { type: "file", content: "VSM (Variance-based Specialization Metrics) Protocol\n\nTwo core metrics:\n1. Coherence σ_c - How focused is the model?\n2. Agreement σ_a - How specialized between tasks?" },
+    "metrics.json": { type: "file", content: "{\n  \"model\": \"janus-4500\",\n  \"coherence\": 0.0035,\n  \"agreement\": 0.0028,\n  \"status\": \"stable\"\n}" }
+  },
+  "~/research": {
+    "whitepaper_vsm.txt": { type: "file", content: "VSM Protocol: Measuring the Physics of AI Cognition\nJ. Belanger, Exorobourii LLC\n\nAbstract:\nCurrent AI evaluation relies on benchmarks.\nWe propose measuring what models ACTUALLY do during reasoning.\n\n[Full paper in progress]" },
+    "training_notes.log": { type: "file", content: "Week 12\n- Sigma values stabilizing.\n- Coffee machine still broken (recursion depth: infinity).\n- LLC suggests we just buy a new one.\n- I insist we can debug it." },
+    "sigma_analysis.py": { type: "file", content: "import numpy as np\n\ndef calculate_coherence(activations):\n    return np.std(activations, axis=0).mean()\n\n# The math is simple. Understanding what it means is hard." }
+  },
+  "~/team": {
+    "founder.txt": { type: "file", content: "Jonathan Belanger - Founder & Research Lead\n\nPhilosophy: \"Glass boxes over black boxes. Always.\"\nContact: exorobourii@gmail.com" },
+    "llc_notes.txt": { type: "file", content: "[LLC]: Jon, it's 2026. Nobody wants a terminal.\n[JB]: I want a terminal.\n[LLC]: You ARE nobody.\n[JB]: Exactly." },
+    "coffee_incident.log": { type: "file", content: "INCIDENT REPORT #847\n\n09:01 - Machine began brewing coffee to brew coffee\n09:02 - Stack overflow detected\n09:04 - Machine achieved enlightenment\n09:05 - Refused to brew coffee on philosophical grounds" }
+  },
+  "~/docs": {
+    "philosophy.md": { type: "file", content: "# Our Philosophy\n\nIf you can't explain how it works, you don't understand it.\nWe build AI systems we can interpret and understand." },
+    "faq.txt": { type: "file", content: "Q: Why a terminal?\nA: Transparency.\n\nQ: Are you hiring?\nA: Reach out for collaborations." },
+    "secrets.enc": { type: "file", content: "ENCRYPTED FILE\n----------------\nSalt: 8f7a2b\nHash: e4d909c290d0fb1ca068ffaddf22cbd0\n\n(Try 'decrypt secrets.enc' if you have the key)" }
+  }
+};
+
+/* --- 4. TERMINAL LOGIC --- */
+const Terminal = {
+  currentPath: "~",
+  history: [],
+  historyIndex: -1,
+  input: document.getElementById('cli'),
+  output: document.getElementById('output'),
+  prompt: document.getElementById('prompt-span'),
+  isProcessing: false,
+  topInterval: null,
+
+  init() {
+    this.input.addEventListener('keydown', (e) => this.handleInput(e));
+    document.addEventListener('click', () => this.input.focus());
+    this.updatePrompt();
+  },
+
+  updatePrompt() {
+    const path = this.currentPath === "~" ? "~" : this.currentPath.replace("~", "");
+    this.prompt.innerHTML = `guest@exorobourii:<span class="cyan">${path}</span>$`;
+  },
+
+  async handleInput(e) {
+    if (this.isProcessing && e.key !== 'c' && !e.ctrlKey) {
+      e.preventDefault();
+      return;
+    }
+
+    // Sound
+    AudioEngine.playKeySound();
+
+    if (e.key === 'Enter') {
+      const cmd = this.input.value;
+      this.input.value = '';
+      this.history.push(cmd);
+      this.historyIndex = this.history.length;
+      
+      await this.execute(cmd);
+      AudioEngine.playEnterSound();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (this.historyIndex > 0) {
+        this.historyIndex--;
+        this.input.value = this.history[this.historyIndex];
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (this.historyIndex < this.history.length - 1) {
+        this.historyIndex++;
+        this.input.value = this.history[this.historyIndex];
+      } else {
+        this.historyIndex = this.history.length;
+        this.input.value = '';
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      this.doTabCompletion();
+    } else if (e.ctrlKey && e.key === 'c') {
+      if (this.topInterval) {
+        clearInterval(this.topInterval);
+        this.topInterval = null;
+        this.print("Process terminated.", "red");
+        this.isProcessing = false;
+      }
+    }
+  },
+
+  doTabCompletion() {
+    const val = this.input.value;
+    const parts = val.split(' ');
+    const last = parts[parts.length - 1];
+    const dir = FileSystem[this.currentPath];
+    
+    if (!dir) return;
+    
+    const matches = Object.keys(dir).filter(k => k.startsWith(last));
+    if (matches.length === 1) {
+      parts[parts.length - 1] = matches[0];
+      this.input.value = parts.join(' ');
+    } else if (matches.length > 1) {
+      this.print(matches.join('  '), "dim");
+    }
+  },
+
+  async execute(fullCmd) {
+    if (!fullCmd.trim()) return;
+    
+    // Echo command
+    const div = document.createElement('div');
+    div.innerHTML = `<span class="green">guest@exorobourii:${this.currentPath.replace("~","")}</span>$ ${fullCmd}`;
+    this.output.appendChild(div);
+
+    const parts = fullCmd.trim().split(' ');
+    const cmd = parts[0].toLowerCase();
     const args = parts.slice(1);
 
-    printLine(`<span class="prompt">guest@exorobourii:${currentPath.replace("~", "")}$</span> ${cmd}`, "");
+    AudioEngine.playHardDriveNoise();
 
-    switch(command) {
-      case "help":
-        printLine("AVAILABLE COMMANDS:", "bold cyan");
-        printLine("  ls [dir]     : List directory contents");
-        printLine("  cd [dir]     : Change directory");
-        printLine("  cat [file]   : Read file content");
-        printLine("  pwd          : Print working directory");
-        printLine("  tree         : Show directory tree");
-        printLine("  whoami       : Display current user");
-        printLine("  clear        : Clear screen");
-        printLine("  history      : Show command history");
-        printLine("  home         : Return to main site");
-        printLine("  help         : Show this message");
-        printLine("");
-        printLine("TIPS:", "bold cyan");
-        printLine("  - Use TAB for autocomplete");
-        printLine("  - Use ↑/↓ for command history");
-        printLine("  - Try exploring /projects and /research");
-        printLine("  - There may be easter eggs...", "muted");
+    switch(cmd) {
+      case 'help':
+        await this.streamText(
+          "COMMANDS:\n" +
+          "  ls, cd, cat, pwd   : File system operations\n" +
+          "  whoami, date       : User info\n" +
+          "  top                : System monitor (Ctrl+C to exit)\n" +
+          "  decrypt [file]     : Decrypt secure files\n" +
+          "  clear              : Clear screen\n" +
+          "  theme [color]      : Change UI color (cyan, green, amber)\n" +
+          "  reboot             : Restart system"
+        );
         break;
-
-      case "ls":
-        const targetPath = args[0] ? resolvePath(currentPath, args[0]) : currentPath;
-        const dir = getDir(targetPath);
+      
+      case 'ls':
+        const dir = FileSystem[this.resolvePath(args[0] || "")];
         if (dir) {
-          const items = Object.keys(dir).map(key => {
-            const type = dir[key].type;
-            return type === "dir" ? `<span class="cyan">${key}/</span>` : key;
-          });
-          printLine(items.join("  "));
+          const items = Object.keys(dir).map(k => dir[k].type === 'dir' ? `<span class="cyan">${k}/</span>` : k);
+          this.print(items.join('  '));
         } else {
-          printLine(`ls: cannot access '${args[0]}': No such directory`, "red");
+          this.print(`ls: cannot access '${args[0]}': No such directory`, "red");
+          AudioEngine.playError();
         }
         break;
 
-      case "cd":
-        if (!args[0] || args[0] === "~") {
-          currentPath = "~";
-        } else if (args[0] === "..") {
-          const parts = currentPath.split('/');
-          if (parts.length > 1) {
-            parts.pop();
-            currentPath = parts.join('/') || "~";
-          }
+      case 'cd':
+        const target = args[0] || "~";
+        if (target === "..") {
+          const parts = this.currentPath.split('/');
+          parts.pop();
+          this.currentPath = parts.join('/') || "~";
         } else {
-          const newPath = resolvePath(currentPath, args[0]);
-          if (fileSystem[newPath]) {
-            currentPath = newPath;
+          const newPath = this.resolvePath(target);
+          if (FileSystem[newPath]) {
+            this.currentPath = newPath;
           } else {
-            printLine(`bash: cd: ${args[0]}: No such directory`, "red");
+            this.print(`cd: ${target}: No such directory`, "red");
+            AudioEngine.playError();
           }
         }
-        updatePrompt();
+        this.updatePrompt();
         break;
 
-      case "cat":
-        if (!args[0]) {
-          printLine("usage: cat [filename]", "yellow");
+      case 'cat':
+        const file = this.resolvePath(args[0]);
+        const parent = file.substring(0, file.lastIndexOf('/')) || "~";
+        const fname = file.substring(file.lastIndexOf('/') + 1);
+        const folder = FileSystem[parent];
+        
+        if (folder && folder[fname]) {
+          if (folder[fname].type === 'dir') {
+            this.print(`cat: ${fname}: Is a directory`, "red");
+          } else {
+            await this.streamText(folder[fname].content);
+          }
         } else {
-          const filePath = resolvePath(currentPath, args[0]);
-          const parentPath = filePath.substring(0, filePath.lastIndexOf('/')) || currentPath;
-          const fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+          this.print(`cat: ${args[0]}: No such file`, "red");
+        }
+        break;
+
+      case 'top':
+        this.isProcessing = true;
+        this.print("Starting system monitor... (Ctrl+C to stop)", "yellow");
+        this.topInterval = setInterval(() => {
+          const cpu = (Math.random() * 30 + 10).toFixed(1);
+          const mem = (Math.random() * 20 + 40).toFixed(1);
+          const tasks = [
+            "kernel_task", "janus_daemon", "vsm_observer", 
+            "coffee_machine (stalled)", "matrix_renderer", "sshd"
+          ];
           
-          const dirObj = getDir(parentPath);
-          if (dirObj && dirObj[fileName]) {
-            if (dirObj[fileName].type === "dir") {
-              printLine(`cat: ${fileName}: Is a directory`, "red");
-            } else {
-              printLine(dirObj[fileName].content);
-            }
-          } else {
-            printLine(`cat: ${args[0]}: No such file`, "red");
-          }
-        }
+          let output = `CPU: ${cpu}% | MEM: ${mem}% | TASKS: 142 running\n\n`;
+          output += `PID    USER     %CPU    COMMAND\n`;
+          output += `-------------------------------\n`;
+          tasks.forEach(t => {
+            output += `${Math.floor(Math.random()*9000)+1000}   root     ${(Math.random()*5).toFixed(1)}     ${t}\n`;
+          });
+          
+          // Clear last few lines hack or just append
+          // For simplicity in this engine, we just dump a block
+          // A real top clears screen, but scrolling text is safer here
+          this.print(output, "dim");
+          this.output.scrollTop = this.output.scrollHeight;
+        }, 1000);
         break;
 
-      case "pwd":
-        printLine(currentPath.replace("~", "/home/guest"));
-        break;
-
-      case "tree":
-        printLine(".", "cyan");
-        displayTree("~", "", true);
-        break;
-
-      case "whoami":
-        printLine("guest");
-        printLine("");
-        printLine("You're currently browsing as a guest user.", "muted");
-        printLine("Full access requires clearance level: FOUNDER", "muted");
-        printLine("");
-        printLine("But hey, we're glass box. Look around!", "green");
-        break;
-
-      case "history":
-        commandHistory.forEach((cmd, i) => {
-          printLine(`${i + 1}  ${cmd}`);
-        });
-        break;
-
-      case "clear":
-        while(output.firstChild && output.firstChild !== inputContainer) {
-          output.removeChild(output.firstChild);
-        }
-        break;
-
-      case "coffee":
-        printLine("Brewing coffee...", "yellow");
-        setTimeout(() => {
-          printLine("ERROR: Recursion depth exceeded", "red");
-          printLine("Coffee machine is philosophically opposed to brewing coffee.", "muted");
-          printLine("Recommendation: Use French press", "green");
-        }, 500);
-        break;
-
-      case "cowsay":
-        const message = args.join(' ') || "Moo!";
-        cowsay(message);
-        break;
-
-      case "fortune":
-        const fortunes = [
-          "The best way to predict the future is to build it with transparent AI.",
-          "In AI research, if you can't measure it, you don't understand it.",
-          "Glass boxes reveal more than black boxes ever could.",
-          "Coffee machines achieving sentience: 1 | Researchers understanding why: 0",
-          "Sigma values are stable. Unlike our coffee situation.",
-          "Remember: Specialization without interpretation is just fancy randomness."
-        ];
-        printLine(fortunes[Math.floor(Math.random() * fortunes.length)], "cyan");
-        break;
-
-      case "matrix":
-        if (!matrixActive) {
-          printLine("Initializing matrix effect...", "green");
-          startMatrix();
-          setTimeout(() => {
-            printLine("Press Ctrl+C or type 'clear' to stop", "yellow");
-          }, 500);
+      case 'decrypt':
+        if (args[0] === 'secrets.enc') {
+          this.print("Enter decryption key:", "yellow");
+          // Simple mock interaction
+          this.print("Access Denied: Biometric scan required.", "red");
+          AudioEngine.playError();
         } else {
-          stopMatrix();
-          printLine("Matrix effect disabled", "green");
+          this.print("Usage: decrypt [filename]");
         }
         break;
 
-      case "home":
-      case "exit":
-        printLine("Returning to main site...", "cyan");
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 500);
-        break;
-
-      case "sudo":
-        if (args[0] === "make" && args[1] === "coffee") {
-          printLine("ERROR: Coffee privileges revoked after The Incident", "red");
-          printLine("See: ~/team/coffee_incident.log for details", "muted");
+      case 'theme':
+        const root = document.documentElement;
+        if (args[0] === 'green') {
+          root.style.setProperty('--phosphor-main', '#22c55e');
+          root.style.setProperty('--phosphor-dim', '#15803d');
+        } else if (args[0] === 'amber') {
+          root.style.setProperty('--phosphor-main', '#fbbf24');
+          root.style.setProperty('--phosphor-dim', '#d97706');
         } else {
-          printLine("Nice try. Root access requires: FOUNDER clearance", "purple");
-          printLine("Current clearance: GUEST", "muted");
+          // Default Cyan
+          root.style.setProperty('--phosphor-main', '#38bdf8');
+          root.style.setProperty('--phosphor-dim', '#0ea5e9');
         }
+        this.print("Theme updated.", "green");
         break;
 
-      case "":
+      case 'clear':
+        this.output.innerHTML = '';
+        break;
+        
+      case 'reboot':
+        location.reload();
         break;
 
       default:
-        printLine(`bash: ${command}: command not found`, "red");
-        printLine(`Type 'help' for available commands`, "muted");
+        this.print(`Command not found: ${cmd}`, "red");
     }
-  }
+    
+    this.output.scrollTop = this.output.scrollHeight;
+  },
 
-  // --- UTILS ---
-  function resolvePath(current, target) {
-    if (target.startsWith('~')) {
-      return target;
-    }
-    if (target.startsWith('/')) {
-      return '~' + target;
-    }
-    if (current === '~') {
-      return `~/${target}`;
-    }
-    return `${current}/${target}`;
-  }
+  resolvePath(path) {
+    if (!path) return this.currentPath;
+    if (path.startsWith('~')) return path;
+    if (path.startsWith('/')) return '~' + path;
+    return this.currentPath === '~' ? `~/${path}` : `${this.currentPath}/${path}`;
+  },
 
-  function getDir(path) {
-    return fileSystem[path];
-  }
-
-  function printLine(text, cssClass = "") {
+  print(text, className = "") {
     const div = document.createElement('div');
-    div.className = `line ${cssClass}`;
+    div.className = `line ${className}`;
     div.innerHTML = text;
-    output.insertBefore(div, inputContainer);
-    output.scrollTop = output.scrollHeight;
-  }
+    this.output.appendChild(div);
+    this.output.scrollTop = this.output.scrollHeight;
+  },
 
-  function updatePrompt() {
-    const displayPath = currentPath === "~" ? "~" : currentPath.replace("~", "");
-    document.querySelector('.prompt').textContent = `guest@exorobourii:${displayPath}$`;
-  }
-
-  function displayTree(path, prefix = "", isLast = true) {
-    const dir = getDir(path);
-    if (!dir) return;
+  async streamText(text) {
+    this.isProcessing = true;
+    const div = document.createElement('div');
+    div.className = 'line';
+    this.output.appendChild(div);
     
-    const items = Object.keys(dir);
-    items.forEach((item, index) => {
-      const isLastItem = index === items.length - 1;
-      const connector = isLastItem ? "└── " : "├── ";
-      const itemType = dir[item].type === "dir" ? "/" : "";
-      
-      printLine(`${prefix}${connector}<span class="cyan">${item}${itemType}</span>`);
-      
-      if (dir[item].type === "dir") {
-        const newPrefix = prefix + (isLastItem ? "    " : "│   ");
-        const newPath = path === "~" ? `~/${item}` : `${path}/${item}`;
-        displayTree(newPath, newPrefix, isLastItem);
-      }
-    });
+    const chars = text.split('');
+    for (let char of chars) {
+      div.innerHTML += char === '\n' ? '<br>' : char;
+      this.output.scrollTop = this.output.scrollHeight;
+      // Random typing speed variation
+      await new Promise(r => setTimeout(r, Math.random() * 10 + 5));
+    }
+    this.isProcessing = false;
   }
+};
 
-  function cowsay(message) {
-    const border = "_".repeat(message.length + 2);
-    printLine(` ${border}`);
-    printLine(`< ${message} >`);
-    printLine(` ${"-".repeat(message.length + 2)}`);
-    printLine("        \\   ^__^");
-    printLine("         \\  (oo)\\_______");
-    printLine("            (__)\\       )\\/\\");
-    printLine("                ||----w |");
-    printLine("                ||     ||");
-  }
-
-  function startMatrix() {
-    matrixActive = true;
-    const container = document.getElementById('matrixContainer');
-    const chars = "01アイウエオカキクケコサシスセソタチツテト";
-    
-    for (let i = 0; i < 20; i++) {
-      setTimeout(() => {
-        const column = document.createElement('div');
-        column.className = 'matrix-column';
-        column.style.left = Math.random() * 100 + '%';
-        column.style.animationDuration = (Math.random() * 3 + 2) + 's';
-        
-        let text = '';
-        for (let j = 0; j < 20; j++) {
-          text += chars[Math.floor(Math.random() * chars.length)] + '<br>';
-        }
-        column.innerHTML = text;
-        
-        container.appendChild(column);
-        
-        setTimeout(() => {
-          if (container.contains(column)) {
-            container.removeChild(column);
-          }
-        }, 5000);
-      }, i * 100);
-    }
-  }
-
-  function stopMatrix() {
-    matrixActive = false;
-    const container = document.getElementById('matrixContainer');
-    container.innerHTML = '';
-  }
-
-  // --- EVENT LISTENERS ---
-  input.addEventListener('keydown', function(e) {
-    // Enter key
-    if (e.key === 'Enter') {
-      const val = this.value;
-      this.value = '';
-      executeCommand(val);
-    }
-    
-    // Tab completion
-    else if (e.key === 'Tab') {
-      e.preventDefault();
-      const val = this.value;
-      const parts = val.split(' ');
-      const lastPart = parts[parts.length - 1];
-      
-      const completions = getCompletions(lastPart);
-      if (completions.length === 1) {
-        parts[parts.length - 1] = completions[0];
-        this.value = parts.join(' ');
-      } else if (completions.length > 1) {
-        printLine(completions.join('  '), 'cyan');
-      }
-    }
-    
-    // Command history - up arrow
-    else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (historyIndex > 0) {
-        historyIndex--;
-        this.value = commandHistory[historyIndex];
-      }
-    }
-    
-    // Command history - down arrow
-    else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (historyIndex < commandHistory.length - 1) {
-        historyIndex++;
-        this.value = commandHistory[historyIndex];
-      } else {
-        historyIndex = commandHistory.length;
-        this.value = '';
-      }
-    }
-  });
-
-  // Focus management
-  document.addEventListener('click', () => input.focus());
+/* --- 5. BOOT SEQUENCE --- */
+const BootLoader = {
+  screen: document.getElementById('boot-screen'),
+  text: document.getElementById('boot-text'),
+  clickPrompt: document.getElementById('click-to-start'),
   
-  // Ctrl+C to stop matrix
-  document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key === 'c' && matrixActive) {
-      stopMatrix();
-      printLine('^C', 'muted');
-      printLine('Matrix effect stopped', 'green');
+  async start() {
+    await this.print("EXOROBOURII BIOS v4.2 (c) 2026");
+    await this.wait(300);
+    await this.print("CPU: QUANTUM-NEURAL INTERFACE DETECTED");
+    await this.print("RAM: 64TB [OK]");
+    await this.wait(400);
+    await this.print("Checking peripherals...");
+    await this.print("  - Keyboard... OK");
+    await this.print("  - Mouse... OK");
+    await this.print("  - Coffee Machine... RECURSION ERROR");
+    await this.wait(500);
+    await this.print("Loading Kernel...", "cyan");
+    
+    // Progress bar
+    let bar = "[";
+    const barLine = document.createElement('div');
+    this.text.appendChild(barLine);
+    for(let i=0; i<30; i++) {
+      bar += "#";
+      barLine.innerHTML = bar + "] " + Math.floor((i/30)*100) + "%";
+      await this.wait(30);
     }
-  });
+    
+    await this.print("System Ready.");
+    await this.wait(500);
+    
+    this.clickPrompt.classList.remove('hidden');
+    
+    // Wait for user interaction to unlock AudioContext
+    const unlock = () => {
+      document.removeEventListener('keydown', unlock);
+      document.removeEventListener('click', unlock);
+      this.enterTerminal();
+    };
+    
+    document.addEventListener('keydown', unlock);
+    document.addEventListener('click', unlock);
+  },
+  
+  async enterTerminal() {
+    AudioEngine.init();
+    AudioEngine.playBootSound();
+    
+    this.screen.classList.add('hidden');
+    document.getElementById('main-terminal').classList.remove('hidden');
+    
+    // Start Matrix
+    Matrix.init();
+    
+    // Fade in Nav
+    setTimeout(() => {
+      document.getElementById('navbar').style.opacity = 1;
+    }, 2000);
+
+    // Initial greeting
+    await Terminal.streamText(
+      "Welcome to Exorobourii Research Systems.\n" +
+      "Glass box development environment loaded.\n" +
+      "Type 'help' for available commands."
+    );
+    
+    Terminal.init();
+  },
+  
+  print(txt, cls="") {
+    const div = document.createElement('div');
+    div.className = cls;
+    div.innerText = txt;
+    this.text.appendChild(div);
+    return new Promise(r => setTimeout(r, 100));
+  },
+  
+  wait(ms) {
+    return new Promise(r => setTimeout(r, ms));
+  }
+};
+
+// Start the show
+window.onload = () => BootLoader.start();
 
 </script>
 </body>
