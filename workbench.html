@@ -2,27 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Janus Mechanistic Workbench | Exorobourii</title>
+  <title>Janus Workbench | Exorobourii</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@300;400;600&display=swap');
 
     :root {
-      --bg: #05080a;
-      --panel-bg: #0a0f14;
-      --border: #1a2332;
+      --bg: #030303;
+      --panel: #0a0a0a;
+      --border: #1f1f1f;
       --text-main: #e2e8f0;
       --text-muted: #64748b;
       
-      /* Control Model Colors */
-      --control-primary: #ef4444;
-      --control-dim: #451a1a;
+      --control: #ef4444; /* Red */
+      --adaptive: #38bdf8; /* Cyan */
+      --success: #22c55e;
       
-      /* Adaptive Model Colors */
-      --adaptive-primary: #06b6d4;
-      --adaptive-dim: #0e3b45;
-      
-      --accent: var(--adaptive-primary); /* Default */
+      --grid-line: rgba(255, 255, 255, 0.05);
     }
 
     * { box-sizing: border-box; }
@@ -32,660 +28,556 @@
       background-color: var(--bg);
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
-    /* --- HEADER --- */
-    header {
-      height: 60px;
-      border-bottom: 1px solid var(--border);
+    h1, h2, h3, .mono { font-family: 'Fira Code', monospace; }
+
+    /* --- NAVIGATION --- */
+    nav {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 0 2rem;
-      background: var(--panel-bg);
-      z-index: 10;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: var(--panel);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .brand {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .brand span { color: var(--text-muted); font-weight: 400; font-size: 0.8rem; }
-
-    .model-toggle {
-      display: flex;
-      background: #000;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 2px;
-    }
-
-    .toggle-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 6px 16px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .toggle-btn.active {
-      color: #fff;
+      font-family: 'Fira Code', monospace;
       font-weight: bold;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: -0.02em;
     }
 
-    .toggle-btn.active.control { background: var(--control-primary); box-shadow: 0 0 10px var(--control-primary); }
-    .toggle-btn.active.adaptive { background: var(--adaptive-primary); box-shadow: 0 0 10px var(--adaptive-primary); }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-left: 1.5rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--adaptive); }
 
-    /* --- MAIN LAYOUT --- */
-    .workspace {
-      flex: 1;
+    /* --- LAYOUT --- */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
       display: grid;
-      grid-template-columns: 350px 1fr 400px;
-      overflow: hidden;
-    }
-
-    /* --- LEFT: METRICS & CHARTS --- */
-    .sidebar-left {
-      border-right: 1px solid var(--border);
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
+      grid-template-columns: 300px 1fr;
       gap: 2rem;
-      background: var(--panel-bg);
-      overflow-y: auto;
     }
 
-    .metric-card {
-      background: rgba(255,255,255,0.02);
+    /* --- SIDEBAR --- */
+    .sidebar {
+      position: sticky;
+      top: 100px;
+      height: fit-content;
+    }
+
+    .meta-panel {
+      background: var(--panel);
       border: 1px solid var(--border);
-      padding: 1rem;
-      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
     }
 
-    .metric-title {
+    .meta-label {
       font-size: 0.75rem;
+      color: var(--text-muted);
       text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
       letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+      display: block;
     }
 
-    .metric-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
+    .meta-value {
+      font-family: 'Fira Code', monospace;
+      font-size: 1.2rem;
+      color: var(--adaptive);
+      margin-bottom: 1.5rem;
+      display: block;
     }
 
-    .chart-container {
-      height: 150px;
-      width: 100%;
-      position: relative;
-      margin-top: 10px;
-    }
-
-    /* --- CENTER: ARCHITECTURE --- */
-    .stage {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at center, #0f151f 0%, #05080a 70%);
-      overflow: hidden;
-    }
-
-    .layer-container {
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      padding: 40px;
-      transform: perspective(1000px) rotateX(10deg) scale(0.9);
-      transition: transform 0.5s ease;
-    }
-
-    .layer-row {
+    .legend-item {
       display: flex;
       align-items: center;
-      gap: 20px;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
     }
+    .dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; }
+    .dot.control { background: var(--control); }
+    .dot.adaptive { background: var(--adaptive); }
 
-    .layer-label {
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      width: 60px;
-      text-align: right;
-    }
-
-    .heads-grid {
+    /* --- MAIN CONTENT --- */
+    .main-content {
       display: flex;
-      gap: 12px;
+      flex-direction: column;
+      gap: 3rem;
     }
 
-    .head-node {
-      width: 40px;
-      height: 40px;
-      background: rgba(255,255,255,0.03);
+    .module {
+      background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 4px;
-      cursor: pointer;
+      padding: 2rem;
       position: relative;
-      transition: all 0.2s ease;
+    }
+
+    .module-header {
       display: flex;
-      align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
     }
 
-    .head-node:hover {
-      transform: scale(1.1);
-      border-color: var(--accent);
-      box-shadow: 0 0 15px var(--accent);
-      z-index: 10;
+    .module-title {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+    .module-subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
     }
 
-    .head-node.selected {
-      background: var(--accent);
-      border-color: #fff;
-      box-shadow: 0 0 20px var(--accent);
-      z-index: 10;
+    /* --- CHARTS --- */
+    .chart-container {
+      width: 100%;
+      height: 300px;
+      position: relative;
+      margin-bottom: 1rem;
     }
-    
-    .head-node.selected::after {
-      content: '';
-      position: absolute;
+
+    svg {
       width: 100%;
       height: 100%;
-      border: 2px solid #fff;
-      border-radius: 4px;
-      animation: pulse 1.5s infinite;
+      overflow: visible;
     }
 
-    /* Heatmap coloring classes */
-    .head-node.high-impact { opacity: 1; }
-    .head-node.low-impact { opacity: 0.3; }
+    .grid-line { stroke: var(--grid-line); stroke-width: 1; }
+    .axis-text { fill: var(--text-muted); font-size: 10px; font-family: 'Fira Code', monospace; }
+    
+    .line-control { fill: none; stroke: var(--control); stroke-width: 2; }
+    .line-adaptive { fill: none; stroke: var(--adaptive); stroke-width: 2; }
+    
+    .bar-control { fill: var(--control); opacity: 0.6; transition: opacity 0.2s; }
+    .bar-adaptive { fill: var(--adaptive); opacity: 0.8; transition: opacity 0.2s; }
+    .bar-adaptive:hover, .bar-control:hover { opacity: 1; cursor: crosshair; }
 
-    /* --- RIGHT: INSPECTOR --- */
-    .sidebar-right {
-      border-left: 1px solid var(--border);
-      background: var(--panel-bg);
-      padding: 0;
-      display: flex;
-      flex-direction: column;
+    /* --- HEATMAP GRID --- */
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 2px;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .heat-cell {
+      aspect-ratio: 1;
+      background: #222;
+      transition: background 0.5s;
     }
 
-    .inspector-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(0,0,0,0.2);
-    }
-
-    .inspector-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin: 0;
-      color: #fff;
-    }
-
-    .inspector-subtitle {
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--accent);
-      font-size: 0.9rem;
-      margin-top: 5px;
-    }
-
-    .inspector-content {
-      padding: 1.5rem;
-      overflow-y: auto;
-      flex: 1;
-    }
-
-    .data-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      padding-bottom: 8px;
-    }
-
-    .data-label { color: var(--text-muted); }
-    .data-val { font-family: 'JetBrains Mono', monospace; color: var(--text-main); }
-
-    .ablation-btn {
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      background: rgba(255, 68, 68, 0.1);
-      border: 1px solid var(--control-primary);
-      color: var(--control-primary);
-      font-family: 'JetBrains Mono', monospace;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-transform: uppercase;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .ablation-btn:hover {
-      background: var(--control-primary);
-      color: #fff;
-    }
-
-    .feature-list {
-      margin-top: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .feature-tag {
-      background: rgba(255,255,255,0.05);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      font-family: 'JetBrains Mono', monospace;
-      border: 1px solid transparent;
+    /* --- FEATURE INSPECTOR --- */
+    .inspector-panel {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
     }
     
-    .feature-tag.semantic { border-color: var(--adaptive-primary); color: var(--adaptive-primary); }
-    .feature-tag.syntactic { border-color: var(--control-primary); color: var(--control-primary); }
+    .token-list {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+    }
+    .token-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .token-score { opacity: 0.6; }
 
     /* --- UTILS --- */
-    .hidden { display: none; }
-    
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(1.4); opacity: 0; }
+    .btn {
+      background: transparent;
+      border: 1px solid var(--adaptive);
+      color: var(--adaptive);
+      padding: 0.5rem 1rem;
+      font-family: 'Fira Code', monospace;
+      cursor: pointer;
+      transition: all 0.2s;
     }
+    .btn:hover { background: var(--adaptive); color: #000; }
+    .btn.active { background: var(--adaptive); color: #000; }
 
-    /* SVG Charts */
-    svg { width: 100%; height: 100%; overflow: visible; }
-    .chart-line { fill: none; stroke-width: 2; }
-    .chart-dot { r: 3; }
-    .chart-grid { stroke: #333; stroke-width: 0.5; stroke-dasharray: 4; }
-    .chart-text { fill: #666; font-size: 10px; font-family: monospace; }
+    .flex-row { display: flex; gap: 1rem; }
+    .hidden { display: none; }
 
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+      .sidebar { position: relative; top: 0; }
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    JANUS WORKBENCH <span>v2.0.4</span>
+<nav>
+  <a href="index.html" class="brand">Exorobourii</a>
+  <div class="nav-links">
+    <a href="mission.html">Mission</a>
+    <a href="projects.html">Projects</a>
+    <a href="staff.html">Staff</a>
   </div>
-  <div class="model-toggle">
-    <button class="toggle-btn active control" onclick="switchModel('control')">CONTROL</button>
-    <button class="toggle-btn adaptive" onclick="switchModel('adaptive')">ADAPTIVE (VSM)</button>
-  </div>
-</header>
+</nav>
 
-<div class="workspace">
+<div class="container">
   
-  <!-- LEFT PANEL: GLOBAL STATS -->
-  <div class="sidebar-left">
-    <div class="metric-card">
-      <div class="metric-title">Effective Rank (L6)</div>
-      <div class="metric-value" id="rank-val">282.1</div>
-      <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
-        Utilization: <span id="rank-util">55.1%</span>
-      </div>
+  <!-- SIDEBAR METRICS -->
+  <aside class="sidebar">
+    <div class="meta-panel">
+      <span class="meta-label">Project Status</span>
+      <span class="meta-value" style="color: var(--success)">PUBLISHED</span>
+      
+      <span class="meta-label">Model Architecture</span>
+      <span class="meta-value">Janus v3 (40M)</span>
+      
+      <span class="meta-label">Intervention</span>
+      <span class="meta-value">Vector Space Homeostasis</span>
+      
+      <hr style="border: 0; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+      
+      <div class="legend-item"><div class="dot control"></div> Control Model</div>
+      <div class="legend-item"><div class="dot adaptive"></div> Adaptive (VSM)</div>
     </div>
 
-    <div class="metric-card">
-      <div class="metric-title">Max Cosine Sim (L9)</div>
-      <div class="metric-value" id="sim-val">0.0305</div>
-      <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
-        Orthogonality Status: <span id="ortho-status" style="color: var(--control-primary)">COLLAPSED</span>
-      </div>
+    <div class="meta-panel">
+      <span class="meta-label">Key Findings</span>
+      <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+        1. <strong style="color: var(--text-main)">Subspace Disentanglement:</strong> 60.3% reduction in feature correlation.<br><br>
+        2. <strong style="color: var(--text-main)">Sparsity Crossover:</strong> "Filter-then-Pack" strategy observed.<br><br>
+        3. <strong style="color: var(--text-main)">Functional Specialization:</strong> Emergence of load-bearing semantic heads.
+      </p>
+    </div>
+  </aside>
+
+  <!-- MAIN DASHBOARD -->
+  <main class="main-content">
+
+    <!-- HERO -->
+    <div style="margin-bottom: 1rem;">
+      <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Mechanistic Workbench</h1>
+      <p class="mono" style="color: var(--text-muted);">Project Janus Part II: Validation of Orthogonal Regularization</p>
     </div>
 
-    <div class="metric-card">
-      <div class="metric-title">Sparsity Crossover (L0)</div>
-      <div class="chart-container" id="sparsity-chart">
-        <!-- SVG Chart Injected Here -->
-      </div>
-      <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4;">
-        Adaptive model (Cyan) shows "Filter-then-Pack" behavior: Lower L0 in early layers, Higher L0 in deep layers.
-      </div>
-    </div>
-  </div>
-
-  <!-- CENTER PANEL: ANATOMY -->
-  <div class="stage">
-    <div class="layer-container" id="layer-grid">
-      <!-- Generated via JS -->
-    </div>
-    <div style="position: absolute; bottom: 20px; color: var(--text-muted); font-size: 0.8rem; font-family: monospace;">
-      Displaying Probe Layers: 3, 6, 9
-    </div>
-  </div>
-
-  <!-- RIGHT PANEL: INSPECTOR -->
-  <div class="sidebar-right">
-    <div class="inspector-header">
-      <h2 class="inspector-title">Head Inspector</h2>
-      <div class="inspector-subtitle" id="sel-head-id">Select a head...</div>
-    </div>
-    
-    <div class="inspector-content hidden" id="inspector-data">
-      <div class="data-row">
-        <span class="data-label">Sparsity (L0)</span>
-        <span class="data-val" id="val-l0">--</span>
-      </div>
-      <div class="data-row">
-        <span class="data-label">Reconstruction (MSE)</span>
-        <span class="data-val" id="val-mse">--</span>
-      </div>
-      <div class="data-row">
-        <span class="data-label">SAE Path</span>
-        <span class="data-val" id="val-path" style="font-size: 0.7rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">--</span>
-      </div>
-
-      <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
-        <div class="metric-title">Top Activating Features</div>
-        <div class="feature-list" id="feature-list">
-          <!-- Features injected here -->
+    <!-- MODULE 1: TOPOLOGY -->
+    <section class="module">
+      <div class="module-header">
+        <div>
+          <h2 class="module-title">I. Topology & Rank</h2>
+          <div class="module-subtitle">Visualizing the "Expansion Hub" at Layer 6</div>
+        </div>
+        <div class="flex-row">
+          <button class="btn active" onclick="updateTopology('rank')">Effective Rank</button>
+          <button class="btn" onclick="updateTopology('sim')">Cosine Sim</button>
         </div>
       </div>
 
-      <button class="ablation-btn" id="ablation-trigger">
-        <span>ABLATE HEAD</span>
-        <span id="ablation-impact">0.0%</span>
-      </button>
-      <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; text-align: center;">
-        Impact on Validation Loss
+      <div class="chart-container" id="topologyChart">
+        <!-- SVG injected by JS -->
       </div>
-    </div>
-  </div>
+      
+      <div style="display: flex; gap: 2rem; margin-top: 2rem;">
+        <div style="flex: 1;">
+          <span class="meta-label">Layer 6 Rank Utilization</span>
+          <div style="display: flex; align-items: flex-end; gap: 1rem; margin-top: 1rem;">
+            <div>
+              <div style="font-size: 2rem; color: var(--control);">55.1%</div>
+              <div class="mono" style="font-size: 0.8rem;">Control</div>
+            </div>
+            <div style="font-size: 1.5rem; color: var(--text-muted);">→</div>
+            <div>
+              <div style="font-size: 2rem; color: var(--adaptive);">60.1%</div>
+              <div class="mono" style="font-size: 0.8rem;">Adaptive</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex: 1;">
+          <span class="meta-label">Interpretation</span>
+          <p style="font-size: 0.9rem; color: var(--text-muted);">
+            The VSM intervention forces the model to utilize 9.0% more of the available vector space in the middle layers, effectively "creating" parameters through geometric hygiene.
+          </p>
+        </div>
+      </div>
+    </section>
 
+    <!-- MODULE 2: SPARSITY -->
+    <section class="module">
+      <div class="module-header">
+        <div>
+          <h2 class="module-title">II. Feature Dynamics</h2>
+          <div class="module-subtitle">The "Sparsity Crossover" Phenomenon (L0 Norm)</div>
+        </div>
+      </div>
+
+      <div class="chart-container" id="sparsityChart">
+        <!-- SVG injected by JS -->
+      </div>
+
+      <div class="inspector-panel" style="grid-template-columns: 1fr;">
+        <p style="margin: 0; font-size: 0.9rem; line-height: 1.6;">
+          <strong style="color: var(--adaptive)">The Filter-then-Pack Strategy:</strong><br>
+          Note the crossover at Layer 6. The Adaptive model is <strong>sparser</strong> in early layers (filtering noise) but <strong>denser</strong> in deep layers (packing meaning). The Control model remains flat and noisy throughout.
+        </p>
+      </div>
+    </section>
+
+    <!-- MODULE 3: CAUSALITY -->
+    <section class="module">
+      <div class="module-header">
+        <div>
+          <h2 class="module-title">III. Functional Attribution</h2>
+          <div class="module-subtitle">Ablation Impact (Layer 9) - Click bars to inspect</div>
+        </div>
+      </div>
+
+      <div class="chart-container" id="ablationChart">
+        <!-- SVG injected by JS -->
+      </div>
+
+      <div id="headInspector" class="inspector-panel hidden">
+        <div>
+          <span class="meta-label">Control Model (L9H7)</span>
+          <div class="module-subtitle" style="margin-bottom: 1rem;">Syntactic Scaffolding</div>
+          <div class="token-list">
+            <div class="token-item"><span>"that"</span><span class="token-score">2.32</span></div>
+            <div class="token-item"><span>"has"</span><span class="token-score">2.18</span></div>
+            <div class="token-item"><span>"of"</span><span class="token-score">1.64</span></div>
+            <div class="token-item"><span>"in"</span><span class="token-score">1.21</span></div>
+          </div>
+        </div>
+        <div style="border-left: 1px solid var(--border); padding-left: 1rem;">
+          <span class="meta-label" style="color: var(--adaptive)">Adaptive Model (L9H1)</span>
+          <div class="module-subtitle" style="margin-bottom: 1rem;">Semantic Binding</div>
+          <div class="token-list">
+            <div class="token-item"><span style="color: var(--adaptive)">"lazy"</span><span class="token-score">1.62</span></div>
+            <div class="token-item"><span style="color: var(--adaptive)">"fox"</span><span class="token-score">0.94</span></div>
+            <div class="token-item"><span style="color: var(--adaptive)">"complex"</span><span class="token-score">0.88</span></div>
+            <div class="token-item"><span style="color: var(--adaptive)">"brown"</span><span class="token-score">0.72</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
 </div>
 
 <script>
-// --- RAW DATA FROM CSVs ---
-const rawSAE = [
-  {run:'control',layer:3,head:0,mse:0.0172,l0:21.7}, {run:'control',layer:3,head:1,mse:0.0293,l0:46.6}, {run:'control',layer:3,head:2,mse:0.0334,l0:51.5}, {run:'control',layer:3,head:3,mse:0.0224,l0:32.5}, {run:'control',layer:3,head:4,mse:0.0192,l0:28.8}, {run:'control',layer:3,head:5,mse:0.0260,l0:38.6}, {run:'control',layer:3,head:6,mse:0.0171,l0:23.0}, {run:'control',layer:3,head:7,mse:0.0131,l0:16.5},
-  {run:'control',layer:6,head:0,mse:0.0253,l0:40.8}, {run:'control',layer:6,head:1,mse:0.0165,l0:19.6}, {run:'control',layer:6,head:2,mse:0.0226,l0:28.6}, {run:'control',layer:6,head:3,mse:0.0403,l0:51.1}, {run:'control',layer:6,head:4,mse:0.0254,l0:39.8}, {run:'control',layer:6,head:5,mse:0.0250,l0:36.5}, {run:'control',layer:6,head:6,mse:0.0364,l0:51.5}, {run:'control',layer:6,head:7,mse:0.0366,l0:49.0},
-  {run:'control',layer:9,head:0,mse:0.0425,l0:53.5}, {run:'control',layer:9,head:1,mse:0.0449,l0:66.6}, {run:'control',layer:9,head:2,mse:0.0455,l0:72.6}, {run:'control',layer:9,head:3,mse:0.0326,l0:45.2}, {run:'control',layer:9,head:4,mse:0.0431,l0:62.1}, {run:'control',layer:9,head:5,mse:0.0343,l0:47.3}, {run:'control',layer:9,head:6,mse:0.0463,l0:68.5}, {run:'control',layer:9,head:7,mse:0.0415,l0:54.8},
-  {run:'adaptive',layer:3,head:0,mse:0.0288,l0:47.5}, {run:'adaptive',layer:3,head:1,mse:0.0228,l0:34.2}, {run:'adaptive',layer:3,head:2,mse:0.0177,l0:24.7}, {run:'adaptive',layer:3,head:3,mse:0.0200,l0:28.4}, {run:'adaptive',layer:3,head:4,mse:0.0169,l0:21.3}, {run:'adaptive',layer:3,head:5,mse:0.0200,l0:23.7}, {run:'adaptive',layer:3,head:6,mse:0.0191,l0:25.4}, {run:'adaptive',layer:3,head:7,mse:0.0166,l0:21.7},
-  {run:'adaptive',layer:6,head:0,mse:0.0332,l0:49.7}, {run:'adaptive',layer:6,head:1,mse:0.0267,l0:35.3}, {run:'adaptive',layer:6,head:2,mse:0.0260,l0:32.8}, {run:'adaptive',layer:6,head:3,mse:0.0241,l0:34.8}, {run:'adaptive',layer:6,head:4,mse:0.0303,l0:47.3}, {run:'adaptive',layer:6,head:5,mse:0.0302,l0:44.1}, {run:'adaptive',layer:6,head:6,mse:0.0326,l0:56.0}, {run:'adaptive',layer:6,head:7,mse:0.0432,l0:63.5},
-  {run:'adaptive',layer:9,head:0,mse:0.0425,l0:64.0}, {run:'adaptive',layer:9,head:1,mse:0.0495,l0:77.1}, {run:'adaptive',layer:9,head:2,mse:0.0486,l0:66.7}, {run:'adaptive',layer:9,head:3,mse:0.0568,l0:61.4}, {run:'adaptive',layer:9,head:4,mse:0.0528,l0:78.1}, {run:'adaptive',layer:9,head:5,mse:0.0575,l0:101.0}, {run:'adaptive',layer:9,head:6,mse:0.0441,l0:61.0}, {run:'adaptive',layer:9,head:7,mse:0.0545,l0:81.2}
-];
-
-const rawAblation = [
-  {run:'control',layer:3,head:0,impact:0.019}, {run:'control',layer:3,head:1,impact:0.156}, {run:'control',layer:3,head:2,impact:0.294}, {run:'control',layer:3,head:3,impact:0.042}, {run:'control',layer:3,head:4,impact:0.044}, {run:'control',layer:3,head:5,impact:0.100}, {run:'control',layer:3,head:6,impact:0.035}, {run:'control',layer:3,head:7,impact:0.003},
-  {run:'control',layer:6,head:0,impact:0.095}, {run:'control',layer:6,head:1,impact:0.042}, {run:'control',layer:6,head:2,impact:0.098}, {run:'control',layer:6,head:3,impact:0.360}, {run:'control',layer:6,head:4,impact:0.071}, {run:'control',layer:6,head:5,impact:0.051}, {run:'control',layer:6,head:6,impact:0.184}, {run:'control',layer:6,head:7,impact:0.281},
-  {run:'control',layer:9,head:0,impact:0.295}, {run:'control',layer:9,head:1,impact:0.193}, {run:'control',layer:9,head:2,impact:0.089}, {run:'control',layer:9,head:3,impact:0.070}, {run:'control',layer:9,head:4,impact:0.178}, {run:'control',layer:9,head:5,impact:0.154}, {run:'control',layer:9,head:6,impact:0.268}, {run:'control',layer:9,head:7,impact:0.367},
-  {run:'adaptive',layer:3,head:0,impact:0.036}, {run:'adaptive',layer:3,head:1,impact:0.072}, {run:'adaptive',layer:3,head:2,impact:0.039}, {run:'adaptive',layer:3,head:3,impact:0.050}, {run:'adaptive',layer:3,head:4,impact:0.013}, {run:'adaptive',layer:3,head:5,impact:0.288}, {run:'adaptive',layer:3,head:6,impact:0.036}, {run:'adaptive',layer:3,head:7,impact:0.020},
-  {run:'adaptive',layer:6,head:0,impact:0.200}, {run:'adaptive',layer:6,head:1,impact:0.086}, {run:'adaptive',layer:6,head:2,impact:0.110}, {run:'adaptive',layer:6,head:3,impact:0.051}, {run:'adaptive',layer:6,head:4,impact:0.097}, {run:'adaptive',layer:6,head:5,impact:0.100}, {run:'adaptive',layer:6,head:6,impact:0.163}, {run:'adaptive',layer:6,head:7,impact:0.298},
-  {run:'adaptive',layer:9,head:0,impact:0.144}, {run:'adaptive',layer:9,head:1,impact:0.932}, {run:'adaptive',layer:9,head:2,impact:0.221}, {run:'adaptive',layer:9,head:3,impact:0.438}, {run:'adaptive',layer:9,head:4,impact:0.270}, {run:'adaptive',layer:9,head:5,impact:0.359}, {run:'adaptive',layer:9,head:6,impact:0.129}, {run:'adaptive',layer:9,head:7,impact:0.337}
-];
-
-const rawTopology = {
-  control: {
-    l3: { rank: 280.4, util: 54.7, sim: 0.0218 },
-    l6: { rank: 282.1, util: 55.1, sim: 0.0177 },
-    l9: { rank: 286.9, util: 56.0, sim: 0.0305 }
-  },
-  adaptive: {
-    l3: { rank: 289.5, util: 56.5, sim: 0.0146 },
-    l6: { rank: 307.5, util: 60.1, sim: 0.0083 },
-    l9: { rank: 290.4, util: 56.7, sim: 0.0121 }
-  }
-};
-
-// Semantic Atlas (Appendix C)
-const semanticAtlas = {
-  control: {
-    '9-7': [
-      { t: 'that', v: 2.32, type: 'syntactic' },
-      { t: 'has', v: 2.18, type: 'syntactic' },
-      { t: 'of', v: 1.64, type: 'syntactic' },
-      { t: 'in', v: 1.21, type: 'syntactic' }
-    ]
-  },
-  adaptive: {
-    '9-1': [
-      { t: 'lazy', v: 1.62, type: 'semantic' },
-      { t: 'fox', v: 0.94, type: 'semantic' },
-      { t: 'complex', v: 0.88, type: 'semantic' },
-      { t: 'brown', v: 0.72, type: 'semantic' }
-    ]
-  }
-};
-
-// --- APP STATE ---
-let currentModel = 'control';
-let selectedHead = null;
-
-// --- INITIALIZATION ---
-function init() {
-  renderGrid();
-  renderChart();
-  updateGlobalStats();
-}
-
-// --- CORE LOGIC ---
-function switchModel(model) {
-  currentModel = model;
+  // --- RAW DATA FROM CSV FILES ---
   
-  // Update Buttons
-  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`.toggle-btn.${model}`).classList.add('active');
-  
-  // Update CSS Vars
-  const root = document.documentElement;
-  if(model === 'adaptive') {
-    root.style.setProperty('--accent', 'var(--adaptive-primary)');
-  } else {
-    root.style.setProperty('--accent', 'var(--control-primary)');
+  const topologyData = [
+    { layer: 3, control_rank: 280.4, adaptive_rank: 289.5, control_sim: 0.0218, adaptive_sim: 0.0146 },
+    { layer: 6, control_rank: 282.1, adaptive_rank: 307.5, control_sim: 0.0177, adaptive_sim: 0.0083 },
+    { layer: 9, control_rank: 286.9, adaptive_rank: 290.4, control_sim: 0.0305, adaptive_sim: 0.0121 }
+  ];
+
+  // Aggregated averages from sae_training_results.csv
+  const sparsityData = [
+    { layer: 3, control_l0: 32.4, adaptive_l0: 28.4 },
+    { layer: 6, control_l0: 39.7, adaptive_l0: 45.5 },
+    { layer: 9, control_l0: 58.9, adaptive_l0: 73.9 }
+  ];
+
+  // Top heads from ablation_results.csv (Layer 9 only for clarity)
+  const ablationDataL9 = [
+    { head: 0, control: 0.29, adaptive: 0.14 },
+    { head: 1, control: 0.19, adaptive: 0.93 }, // The Load Bearing Head
+    { head: 2, control: 0.09, adaptive: 0.22 },
+    { head: 3, control: 0.07, adaptive: 0.44 },
+    { head: 4, control: 0.18, adaptive: 0.27 },
+    { head: 5, control: 0.15, adaptive: 0.36 },
+    { head: 6, control: 0.27, adaptive: 0.13 },
+    { head: 7, control: 0.37, adaptive: 0.34 }
+  ];
+
+  // --- CHARTING ENGINE (SVG) ---
+
+  function createSVG(width, height) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    return { svg, ns };
   }
 
-  // Clear Selection
-  selectedHead = null;
-  document.getElementById('inspector-data').classList.add('hidden');
-  document.getElementById('sel-head-id').textContent = "Select a head...";
-
-  renderGrid();
-  updateGlobalStats();
-}
-
-function updateGlobalStats() {
-  const stats = rawTopology[currentModel];
-  
-  // Animate numbers
-  document.getElementById('rank-val').textContent = stats.l6.rank.toFixed(1);
-  document.getElementById('rank-util').textContent = stats.l6.util.toFixed(1) + "%";
-  document.getElementById('sim-val').textContent = stats.l9.sim.toFixed(4);
-  
-  const statusEl = document.getElementById('ortho-status');
-  if(currentModel === 'adaptive') {
-    statusEl.textContent = "ORTHOGONAL";
-    statusEl.style.color = "var(--adaptive-primary)";
-  } else {
-    statusEl.textContent = "COLLAPSED";
-    statusEl.style.color = "var(--control-primary)";
-  }
-}
-
-function renderGrid() {
-  const container = document.getElementById('layer-grid');
-  container.innerHTML = '';
-  
-  const layers = [3, 6, 9];
-  
-  layers.forEach(l => {
-    const row = document.createElement('div');
-    row.className = 'layer-row';
+  function drawLineChart(containerId, data, keyControl, keyAdaptive, yMin, yMax, label) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    const { svg, ns } = createSVG(800, 300);
     
-    const label = document.createElement('div');
-    label.className = 'layer-label';
-    label.textContent = `LAYER ${l}`;
-    row.appendChild(label);
-    
-    const grid = document.createElement('div');
-    grid.className = 'heads-grid';
-    
-    for(let h=0; h<8; h++) {
-      const node = document.createElement('div');
-      node.className = 'head-node';
+    const padding = 40;
+    const w = 800 - padding * 2;
+    const h = 300 - padding * 2;
+
+    // Scales
+    const xScale = (i) => padding + (i / (data.length - 1)) * w;
+    const yScale = (val) => 300 - padding - ((val - yMin) / (yMax - yMin)) * h;
+
+    // Grid & Axis
+    const layers = [3, 6, 9];
+    layers.forEach((l, i) => {
+      const x = xScale(i);
       
-      // Get Impact Data for opacity
-      const impactData = rawAblation.find(x => x.run === currentModel && x.layer === l && x.head === h);
-      const impact = impactData ? impactData.impact : 0;
-      
-      // Visual scaling of impact
-      // Max impact is ~0.9, min is ~0.0
-      // We want opacity between 0.2 and 1.0
-      const opacity = 0.2 + (impact * 0.8); 
-      node.style.background = `rgba(255,255,255, ${opacity * 0.15})`;
-      node.style.borderColor = `rgba(255,255,255, ${opacity * 0.5})`;
-      
-      // Special glow for the Load Bearing Head in Adaptive
-      if(currentModel === 'adaptive' && l === 9 && h === 1) {
-        node.style.boxShadow = `0 0 10px var(--adaptive-primary)`;
-        node.style.borderColor = `var(--adaptive-primary)`;
-      }
+      // Vertical line
+      const line = document.createElementNS(ns, "line");
+      line.setAttribute("x1", x); line.setAttribute("y1", padding);
+      line.setAttribute("x2", x); line.setAttribute("y2", 300 - padding);
+      line.setAttribute("class", "grid-line");
+      svg.appendChild(line);
 
-      node.onclick = () => selectHead(l, h, node);
-      grid.appendChild(node);
-    }
-    
-    row.appendChild(grid);
-    container.appendChild(row);
-  });
-}
-
-function selectHead(l, h, el) {
-  // UI Selection
-  document.querySelectorAll('.head-node').forEach(n => n.classList.remove('selected'));
-  el.classList.add('selected');
-  
-  selectedHead = {l, h};
-  
-  // Show Inspector
-  const inspector = document.getElementById('inspector-data');
-  inspector.classList.remove('hidden');
-  document.getElementById('sel-head-id').textContent = `LAYER ${l} // HEAD ${h}`;
-  
-  // Populate Data
-  const sae = rawSAE.find(x => x.run === currentModel && x.layer === l && x.head === h);
-  const abl = rawAblation.find(x => x.run === currentModel && x.layer === l && x.head === h);
-  
-  document.getElementById('val-l0').textContent = sae.l0.toFixed(1);
-  document.getElementById('val-mse').textContent = sae.mse.toFixed(4);
-  document.getElementById('val-path').textContent = `.../sae_${currentModel}_L${l}_H${h}.pt`;
-  
-  document.getElementById('ablation-impact').textContent = abl.pct_impact.toFixed(3) + "%";
-  
-  // Features
-  const list = document.getElementById('feature-list');
-  list.innerHTML = '';
-  
-  const key = `${l}-${h}`;
-  const features = semanticAtlas[currentModel][key];
-  
-  if(features) {
-    features.forEach(f => {
-      const tag = document.createElement('div');
-      tag.className = `feature-tag ${f.type}`;
-      tag.textContent = `${f.t} (${f.v})`;
-      list.appendChild(tag);
+      // Label
+      const text = document.createElementNS(ns, "text");
+      text.setAttribute("x", x - 10);
+      text.setAttribute("y", 300 - padding + 20);
+      text.setAttribute("class", "axis-text");
+      text.textContent = `L${l}`;
+      svg.appendChild(text);
     });
-  } else {
-    list.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">No semantic atlas data available for this head.</span>';
+
+    // Path Generator
+    const makePath = (key, cssClass) => {
+      let d = "";
+      data.forEach((pt, i) => {
+        const x = xScale(i);
+        const y = yScale(pt[key]);
+        d += (i === 0 ? "M" : "L") + `${x},${y} `;
+        
+        // Dot
+        const circle = document.createElementNS(ns, "circle");
+        circle.setAttribute("cx", x); circle.setAttribute("cy", y);
+        circle.setAttribute("r", 4);
+        circle.setAttribute("fill", cssClass.includes("control") ? "#ef4444" : "#38bdf8");
+        svg.appendChild(circle);
+      });
+      const path = document.createElementNS(ns, "path");
+      path.setAttribute("d", d);
+      path.setAttribute("class", cssClass);
+      svg.appendChild(path);
+    };
+
+    makePath(keyControl, "line-control");
+    makePath(keyAdaptive, "line-adaptive");
+
+    container.appendChild(svg);
   }
-}
 
-function renderChart() {
-  // Simple SVG Line Chart for Sparsity Crossover
-  const container = document.getElementById('sparsity-chart');
-  
-  // Data points (Mean L0 per layer)
-  // Control: L3(32.4) -> L6(39.7) -> L9(58.9)
-  // Adaptive: L3(28.4) -> L6(45.5) -> L9(73.9)
-  
-  const w = container.clientWidth;
-  const h = container.clientHeight;
-  const pad = 20;
-  
-  // Scales
-  const mapX = (l) => pad + ((l-3)/6) * (w - pad*2); // Layers 3 to 9
-  const mapY = (v) => h - (pad + ((v-20)/60) * (h - pad*2)); // L0 20 to 80
-  
-  const cPoints = `
-    ${mapX(3)},${mapY(32.4)} 
-    ${mapX(6)},${mapY(39.7)} 
-    ${mapX(9)},${mapY(58.9)}
-  `;
-  
-  const aPoints = `
-    ${mapX(3)},${mapY(28.4)} 
-    ${mapX(6)},${mapY(45.5)} 
-    ${mapX(9)},${mapY(73.9)}
-  `;
-  
-  const svg = `
-    <svg>
-      <!-- Grid -->
-      <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${h-pad}" class="chart-grid" />
-      <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" class="chart-grid" />
-      
-      <!-- Labels -->
-      <text x="${mapX(3)}" y="${h-5}" class="chart-text" text-anchor="middle">L3</text>
-      <text x="${mapX(6)}" y="${h-5}" class="chart-text" text-anchor="middle">L6</text>
-      <text x="${mapX(9)}" y="${h-5}" class="chart-text" text-anchor="middle">L9</text>
-      
-      <!-- Control Line -->
-      <polyline points="${cPoints}" stroke="var(--control-primary)" class="chart-line" stroke-dasharray="4" />
-      <circle cx="${mapX(3)}" cy="${mapY(32.4)}" class="chart-dot" fill="var(--control-primary)" />
-      <circle cx="${mapX(9)}" cy="${mapY(58.9)}" class="chart-dot" fill="var(--control-primary)" />
-      
-      <!-- Adaptive Line -->
-      <polyline points="${aPoints}" stroke="var(--adaptive-primary)" class="chart-line" />
-      <circle cx="${mapX(3)}" cy="${mapY(28.4)}" class="chart-dot" fill="var(--adaptive-primary)" />
-      <circle cx="${mapX(9)}" cy="${mapY(73.9)}" class="chart-dot" fill="var(--adaptive-primary)" />
-      
-    </svg>
-  `;
-  
-  container.innerHTML = svg;
-}
+  function drawBarChart(containerId, data) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    const { svg, ns } = createSVG(800, 300);
+    
+    const padding = 40;
+    const w = 800 - padding * 2;
+    const h = 300 - padding * 2;
+    const barWidth = 20;
+    const gap = 50;
 
-// Ablation Button Effect
-document.getElementById('ablation-trigger').addEventListener('click', function() {
-  const originalText = this.innerHTML;
-  this.style.background = "var(--control-primary)";
-  this.style.color = "#fff";
-  this.innerHTML = "<span>ABLATING...</span>";
-  
-  setTimeout(() => {
-    this.innerHTML = "<span>LOSS INCREASED</span>";
-    setTimeout(() => {
-      this.innerHTML = originalText;
-      this.style.background = "";
-      this.style.color = "";
-    }, 1500);
-  }, 500);
-});
+    // Max value for scale
+    const maxVal = 1.0; // Fixed scale for percentage
 
-// Start
-init();
+    data.forEach((d, i) => {
+      const xCenter = padding + (i * (w / 8)) + (w/16);
+      
+      // Control Bar
+      const hControl = (d.control / maxVal) * h;
+      const rectC = document.createElementNS(ns, "rect");
+      rectC.setAttribute("x", xCenter - barWidth - 2);
+      rectC.setAttribute("y", 300 - padding - hControl);
+      rectC.setAttribute("width", barWidth);
+      rectC.setAttribute("height", hControl);
+      rectC.setAttribute("class", "bar-control");
+      svg.appendChild(rectC);
+
+      // Adaptive Bar
+      const hAdaptive = (d.adaptive / maxVal) * h;
+      const rectA = document.createElementNS(ns, "rect");
+      rectA.setAttribute("x", xCenter + 2);
+      rectA.setAttribute("y", 300 - padding - hAdaptive);
+      rectA.setAttribute("width", barWidth);
+      rectA.setAttribute("height", hAdaptive);
+      rectA.setAttribute("class", "bar-adaptive");
+      
+      // Interaction for Head 1
+      if (d.head === 1) {
+        rectA.style.cursor = "pointer";
+        rectA.onclick = () => {
+          document.getElementById('headInspector').classList.remove('hidden');
+          rectA.style.fill = "#fff"; // Highlight
+        };
+        
+        // Pulse animation for the hero head
+        const animate = document.createElementNS(ns, "animate");
+        animate.setAttribute("attributeName", "opacity");
+        animate.setAttribute("values", "0.8;1;0.8");
+        animate.setAttribute("dur", "2s");
+        animate.setAttribute("repeatCount", "indefinite");
+        rectA.appendChild(animate);
+      }
+      
+      svg.appendChild(rectA);
+
+      // Label
+      const text = document.createElementNS(ns, "text");
+      text.setAttribute("x", xCenter - 10);
+      text.setAttribute("y", 300 - padding + 20);
+      text.setAttribute("class", "axis-text");
+      text.textContent = `H${d.head}`;
+      svg.appendChild(text);
+    });
+
+    // Y Axis Label
+    const yLabel = document.createElementNS(ns, "text");
+    yLabel.setAttribute("x", 10);
+    yLabel.setAttribute("y", padding);
+    yLabel.setAttribute("class", "axis-text");
+    yLabel.textContent = "% Impact";
+    svg.appendChild(yLabel);
+
+    container.appendChild(svg);
+  }
+
+  // --- INITIALIZATION ---
+
+  function updateTopology(mode) {
+    // Toggle buttons
+    const btns = document.querySelectorAll('.module-header .btn');
+    btns.forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    if (mode === 'rank') {
+      drawLineChart('topologyChart', topologyData, 'control_rank', 'adaptive_rank', 270, 310);
+    } else {
+      drawLineChart('topologyChart', topologyData, 'control_sim', 'adaptive_sim', 0, 0.04);
+    }
+  }
+
+  // Init
+  window.onload = () => {
+    updateTopology('rank');
+    drawLineChart('sparsityChart', sparsityData, 'control_l0', 'adaptive_l0', 20, 80);
+    drawBarChart('ablationChart', ablationDataL9);
+  };
 
 </script>
+
 </body>
 </html>
