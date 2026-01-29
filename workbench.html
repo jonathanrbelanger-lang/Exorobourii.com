@@ -50,6 +50,7 @@
       font-weight: 700;
       font-size: 1.1rem;
       color: var(--text-main);
+      text-decoration: none;
       letter-spacing: -0.5px;
       display: flex;
       align-items: center;
@@ -58,7 +59,7 @@
 
     .brand span { color: var(--accent-cyan); }
 
-    .nav-links { display: flex; gap: 2rem; }
+    .nav-links { display: flex; gap: 1.5rem; }
 
     .nav-links a {
       color: var(--text-muted);
@@ -153,13 +154,26 @@
       background: radial-gradient(circle at top right, #111827 0%, #050505 40%);
     }
 
+    /* --- CHART CONTAINER FIX --- */
     .chart-container {
       background: var(--panel-bg);
       border: 1px solid var(--border-color);
       border-radius: 6px;
       padding: 1.5rem;
       position: relative;
-      min-height: 300px;
+      /* FIX: Strict height + overflow hidden prevents infinite loop */
+      height: 350px; 
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .chart-wrapper {
+      flex: 1;
+      position: relative;
+      min-height: 0; /* Crucial for flex child resizing */
+      width: 100%;
     }
 
     .section-header {
@@ -167,6 +181,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1rem;
+      flex-shrink: 0; /* Header won't shrink */
     }
 
     .section-title {
@@ -211,15 +226,16 @@
       grid-template-columns: repeat(8, 1fr);
       gap: 4px;
       margin-top: 10px;
+      flex: 1; /* Fill remaining space in container */
     }
 
     .head-cell {
-      aspect-ratio: 1;
       background: var(--border-color);
       border-radius: 2px;
       cursor: pointer;
       transition: transform 0.1s;
       position: relative;
+      height: 100%; /* Fill grid cell */
     }
 
     .head-cell:hover { transform: scale(1.1); z-index: 10; border: 1px solid white; }
@@ -247,19 +263,26 @@
       .sidebar { flex-direction: row; flex-wrap: wrap; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border-color); }
       .control-group { min-width: 200px; }
     }
+    
+    @media (max-width: 768px) {
+      nav { flex-direction: column; height: auto; padding: 1rem; }
+      .nav-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+    }
   </style>
 </head>
 <body>
 
   <nav>
-    <div class="brand">
+    <a href="index.html" class="brand">
       <span>EXO</span>ROBOURII // JANUS WORKBENCH
-    </div>
+    </a>
     <div class="nav-links">
-      <a href="index.html">Terminal</a>
-      <a href="mission.html">Mission</a>
-      <a href="#" class="active">Research</a>
+      <a href="index.html">Home</a>
+      <a href="helpdesk.html">Terminal</a>
+      <a href="projects.html">Projects</a>
+      <a href="workbench.html" class="active">Workbench</a>
       <a href="staff.html">Staff</a>
+      <a href="about.html">About</a>
     </div>
   </nav>
 
@@ -301,7 +324,7 @@
     <main class="main-view">
       
       <!-- ROW 1: SPARSITY & TOPOLOGY -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
         
         <!-- SPARSITY CHART -->
         <div class="chart-container">
@@ -311,7 +334,9 @@
               Feature Density (Sparsity Crossover)
             </div>
           </div>
-          <canvas id="sparsityChart"></canvas>
+          <div class="chart-wrapper">
+            <canvas id="sparsityChart"></canvas>
+          </div>
         </div>
 
         <!-- TOPOLOGY CHART -->
@@ -322,7 +347,9 @@
               Subspace Geometry (Rank)
             </div>
           </div>
-          <canvas id="topologyChart"></canvas>
+          <div class="chart-wrapper">
+            <canvas id="topologyChart"></canvas>
+          </div>
         </div>
       </div>
 
@@ -364,7 +391,7 @@
   </div>
 
 <script>
-  // --- RAW DATA (Parsed from your CSVs) ---
+  // --- RAW DATA ---
   const DATA = {
     sparsity: [
       { layer: 3, control: 32.4, adaptive: 28.4 },
@@ -377,8 +404,8 @@
       { layer: 9, control: 286.9, adaptive: 290.4 }
     ],
     ablation: {
-      control: [0.29, 0.19, 0.08, 0.07, 0.17, 0.15, 0.26, 0.36], // Layer 9 heads
-      adaptive: [0.93, 0.14, 0.22, 0.43, 0.27, 0.35, 0.12, 0.33] // Layer 9 heads
+      control: [0.29, 0.19, 0.08, 0.07, 0.17, 0.15, 0.26, 0.36], 
+      adaptive: [0.93, 0.14, 0.22, 0.43, 0.27, 0.35, 0.12, 0.33] 
     }
   };
 
@@ -452,7 +479,7 @@
   function getChartConfig(yLabel) {
     return {
       responsive: true,
-      maintainAspectRatio: false,
+      maintainAspectRatio: false, // Allows chart to fill container height
       plugins: {
         legend: { labels: { color: '#94a3b8', font: { family: 'Fira Code' } } }
       },
@@ -476,14 +503,12 @@
     grid.innerHTML = '';
     
     const data = DATA.ablation[currentMode];
-    const maxVal = Math.max(...DATA.ablation.adaptive); // Normalize against max possible
+    const maxVal = Math.max(...DATA.ablation.adaptive); 
 
     data.forEach((val, index) => {
       const cell = document.createElement('div');
       cell.className = 'head-cell';
       
-      // Color calculation (Heatmap style)
-      // Low = Blue/Grey, High = Red/Orange
       const intensity = val / maxVal;
       const r = Math.floor(intensity * 255);
       const b = Math.floor((1 - intensity) * 100);
@@ -491,7 +516,6 @@
       cell.style.backgroundColor = `rgba(${r}, 50, ${b}, 0.6)`;
       cell.style.border = `1px solid rgba(${r}, 50, ${b}, 1)`;
 
-      // Tooltip
       const tooltip = document.createElement('div');
       tooltip.className = 'tooltip';
       tooltip.innerHTML = `Head ${index}<br>Impact: ${val.toFixed(3)}%`;
@@ -515,11 +539,9 @@
     if (currentMode === mode) return;
     currentMode = mode;
     
-    // Update Buttons
     document.getElementById('btn-control').classList.toggle('active', mode === 'control');
     document.getElementById('btn-adaptive').classList.toggle('active', mode === 'adaptive');
 
-    // Update Stats
     if (mode === 'adaptive') {
       document.getElementById('stat-rank').innerText = "307.5";
       document.getElementById('stat-sparsity').innerText = "73.9";
@@ -534,11 +556,9 @@
       log("Switched to CONTROL model context.", "warn");
     }
 
-    // Update Grid
     renderAblationGrid();
   }
 
-  // --- UTILS ---
   function log(msg, type = "normal") {
     const consoleDiv = document.getElementById('console');
     const line = document.createElement('div');
