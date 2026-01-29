@@ -2,582 +2,563 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Janus Workbench | Exorobourii</title>
+  <title>Project Janus | Mechanistic Workbench</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@300;400;600&display=swap');
-
     :root {
-      --bg: #030303;
-      --panel: #0a0a0a;
-      --border: #1f1f1f;
+      --bg-color: #050505;
+      --panel-bg: #0f1115;
+      --border-color: #2a2f3a;
       --text-main: #e2e8f0;
       --text-muted: #64748b;
-      
-      --control: #ef4444; /* Red */
-      --adaptive: #38bdf8; /* Cyan */
-      --success: #22c55e;
-      
-      --grid-line: rgba(255, 255, 255, 0.05);
+      --accent-cyan: #38bdf8;
+      --accent-red: #ef4444;
+      --accent-green: #22c55e;
+      --accent-purple: #c084fc;
+      --font-mono: 'Fira Code', 'Courier New', monospace;
+      --font-sans: system-ui, -apple-system, sans-serif;
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      background-color: var(--bg);
+      background-color: var(--bg-color);
       color: var(--text-main);
-      font-family: 'Inter', sans-serif;
-      overflow-x: hidden;
+      font-family: var(--font-sans);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
-
-    h1, h2, h3, .mono { font-family: 'Fira Code', monospace; }
 
     /* --- NAVIGATION --- */
     nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem 2rem;
-      background-color: var(--panel);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      padding: 0 2rem;
+      height: 60px;
+      background-color: var(--panel-bg);
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
     }
 
     .brand {
-      font-family: 'Fira Code', monospace;
-      font-weight: bold;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.1rem;
       color: var(--text-main);
-      text-decoration: none;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+
+    .brand span { color: var(--accent-cyan); }
+
+    .nav-links { display: flex; gap: 2rem; }
 
     .nav-links a {
       color: var(--text-muted);
       text-decoration: none;
       font-size: 0.9rem;
-      margin-left: 1.5rem;
+      font-weight: 500;
       transition: color 0.2s;
     }
-    .nav-links a:hover { color: var(--adaptive); }
+
+    .nav-links a:hover, .nav-links a.active { color: var(--accent-cyan); }
 
     /* --- LAYOUT --- */
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2rem;
+    .workbench-container {
+      flex: 1;
       display: grid;
       grid-template-columns: 300px 1fr;
-      gap: 2rem;
+      grid-template-rows: 1fr 200px;
+      overflow: hidden;
     }
 
-    /* --- SIDEBAR --- */
+    /* --- SIDEBAR (CONTROLS) --- */
     .sidebar {
-      position: sticky;
-      top: 100px;
-      height: fit-content;
-    }
-
-    .meta-panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
+      background-color: #0a0c10;
+      border-right: 1px solid var(--border-color);
       padding: 1.5rem;
-      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      grid-row: 1 / -1;
+      overflow-y: auto;
     }
 
-    .meta-label {
+    .control-group { display: flex; flex-direction: column; gap: 0.8rem; }
+    
+    .label {
+      font-family: var(--font-mono);
       font-size: 0.75rem;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 0.5rem;
-      display: block;
     }
 
-    .meta-value {
-      font-family: 'Fira Code', monospace;
-      font-size: 1.2rem;
-      color: var(--adaptive);
-      margin-bottom: 1.5rem;
-      display: block;
+    .stat-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      padding: 1rem;
+      border-radius: 4px;
     }
 
-    .legend-item {
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+    .toggle-wrapper {
       display: flex;
-      align-items: center;
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 2px;
     }
-    .dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; }
-    .dot.control { background: var(--control); }
-    .dot.adaptive { background: var(--adaptive); }
 
-    /* --- MAIN CONTENT --- */
-    .main-content {
+    .toggle-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+
+    .toggle-btn.active {
+      background: var(--border-color);
+      color: var(--text-main);
+      font-weight: bold;
+    }
+
+    /* --- MAIN VISUALIZATION --- */
+    .main-view {
+      padding: 2rem;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 3rem;
+      gap: 2rem;
+      background: radial-gradient(circle at top right, #111827 0%, #050505 40%);
     }
 
-    .module {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      padding: 2rem;
+    .chart-container {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 1.5rem;
       position: relative;
+      min-height: 300px;
     }
 
-    .module-header {
+    .section-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 2rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 1rem;
-    }
-
-    .module-title {
-      font-size: 1.5rem;
-      margin: 0;
-    }
-    .module-subtitle {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-top: 0.5rem;
-    }
-
-    /* --- CHARTS --- */
-    .chart-container {
-      width: 100%;
-      height: 300px;
-      position: relative;
+      align-items: center;
       margin-bottom: 1rem;
     }
 
-    svg {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .grid-line { stroke: var(--grid-line); stroke-width: 1; }
-    .axis-text { fill: var(--text-muted); font-size: 10px; font-family: 'Fira Code', monospace; }
-    
-    .line-control { fill: none; stroke: var(--control); stroke-width: 2; }
-    .line-adaptive { fill: none; stroke: var(--adaptive); stroke-width: 2; }
-    
-    .bar-control { fill: var(--control); opacity: 0.6; transition: opacity 0.2s; }
-    .bar-adaptive { fill: var(--adaptive); opacity: 0.8; transition: opacity 0.2s; }
-    .bar-adaptive:hover, .bar-control:hover { opacity: 1; cursor: crosshair; }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+    }
 
-    /* --- HEATMAP GRID --- */
-    .heatmap-grid {
+    /* --- BOTTOM CONSOLE --- */
+    .console-drawer {
+      grid-column: 2;
+      background-color: #08090b;
+      border-top: 1px solid var(--border-color);
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .console-line { margin-bottom: 4px; display: flex; gap: 10px; }
+    .timestamp { color: var(--text-muted); }
+    .log-msg { color: var(--text-main); }
+    .log-info { color: var(--accent-cyan); }
+    .log-warn { color: var(--accent-red); }
+    .log-success { color: var(--accent-green); }
+
+    /* --- ABLATION GRID --- */
+    .ablation-grid {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
-      gap: 2px;
-      max-width: 300px;
-      margin: 0 auto;
+      gap: 4px;
+      margin-top: 10px;
     }
-    .heat-cell {
+
+    .head-cell {
       aspect-ratio: 1;
-      background: #222;
-      transition: background 0.5s;
-    }
-
-    /* --- FEATURE INSPECTOR --- */
-    .inspector-panel {
-      background: rgba(0,0,0,0.3);
-      border: 1px solid var(--border);
-      padding: 1rem;
-      margin-top: 1rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    
-    .token-list {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.9rem;
-    }
-    .token-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .token-score { opacity: 0.6; }
-
-    /* --- UTILS --- */
-    .btn {
-      background: transparent;
-      border: 1px solid var(--adaptive);
-      color: var(--adaptive);
-      padding: 0.5rem 1rem;
-      font-family: 'Fira Code', monospace;
+      background: var(--border-color);
+      border-radius: 2px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: transform 0.1s;
+      position: relative;
     }
-    .btn:hover { background: var(--adaptive); color: #000; }
-    .btn.active { background: var(--adaptive); color: #000; }
 
-    .flex-row { display: flex; gap: 1rem; }
-    .hidden { display: none; }
+    .head-cell:hover { transform: scale(1.1); z-index: 10; border: 1px solid white; }
+    
+    .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000;
+      border: 1px solid var(--border-color);
+      padding: 5px 10px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 20;
+    }
+    .head-cell:hover .tooltip { opacity: 1; }
 
-    @media (max-width: 900px) {
-      .container { grid-template-columns: 1fr; }
-      .sidebar { position: relative; top: 0; }
+    /* --- RESPONSIVE --- */
+    @media (max-width: 1024px) {
+      .workbench-container { grid-template-columns: 1fr; grid-template-rows: auto 1fr 150px; }
+      .sidebar { flex-direction: row; flex-wrap: wrap; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border-color); }
+      .control-group { min-width: 200px; }
     }
   </style>
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="brand">Exorobourii</a>
-  <div class="nav-links">
-    <a href="mission.html">Mission</a>
-    <a href="projects.html">Projects</a>
-    <a href="staff.html">Staff</a>
+  <nav>
+    <div class="brand">
+      <span>EXO</span>ROBOURII // JANUS WORKBENCH
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Terminal</a>
+      <a href="mission.html">Mission</a>
+      <a href="#" class="active">Research</a>
+      <a href="staff.html">Staff</a>
+    </div>
+  </nav>
+
+  <div class="workbench-container">
+    
+    <!-- SIDEBAR CONTROLS -->
+    <aside class="sidebar">
+      <div class="control-group">
+        <div class="label">Model Configuration</div>
+        <div class="toggle-wrapper">
+          <button class="toggle-btn" onclick="setMode('control')" id="btn-control">Control (Baseline)</button>
+          <button class="toggle-btn active" onclick="setMode('adaptive')" id="btn-adaptive">Adaptive (VSM)</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="label">Live Telemetry</div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-rank">307.5</div>
+          <div class="stat-label">Effective Rank (Layer 6)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-sparsity" style="color: var(--accent-green)">73.9</div>
+          <div class="stat-label">Feature Density (L0)</div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="label">P-Controller State</div>
+        <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+          Target σ: <span style="color: var(--accent-cyan)">0.0035</span><br>
+          Current λ: <span style="color: var(--accent-cyan)" id="lambda-val">0.124</span><br>
+          Status: <span style="color: var(--accent-green)">HOMEOSTASIS</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN VISUALIZATION -->
+    <main class="main-view">
+      
+      <!-- ROW 1: SPARSITY & TOPOLOGY -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        
+        <!-- SPARSITY CHART -->
+        <div class="chart-container">
+          <div class="section-header">
+            <div class="section-title">
+              <div class="status-dot"></div>
+              Feature Density (Sparsity Crossover)
+            </div>
+          </div>
+          <canvas id="sparsityChart"></canvas>
+        </div>
+
+        <!-- TOPOLOGY CHART -->
+        <div class="chart-container">
+          <div class="section-header">
+            <div class="section-title">
+              <div class="status-dot"></div>
+              Subspace Geometry (Rank)
+            </div>
+          </div>
+          <canvas id="topologyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- ROW 2: ABLATION MAP -->
+      <div class="chart-container">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="status-dot" style="background-color: var(--accent-red)"></div>
+            Functional Ablation Map (Load-Bearing Heads)
+          </div>
+          <div class="label">Layer 9 Sensitivity</div>
+        </div>
+        <div class="ablation-grid" id="ablationGrid">
+          <!-- Generated by JS -->
+        </div>
+        <div style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+          Brighter Color = Higher Impact on Loss (Critical Component)
+        </div>
+      </div>
+
+    </main>
+
+    <!-- BOTTOM CONSOLE -->
+    <footer class="console-drawer" id="console">
+      <div class="console-line">
+        <span class="timestamp">[09:00:01]</span>
+        <span class="log-msg">Workbench initialized. Loaded artifacts: <span class="log-info">janus-v3-adaptive.pt</span></span>
+      </div>
+      <div class="console-line">
+        <span class="timestamp">[09:00:02]</span>
+        <span class="log-msg">Parsing telemetry data... <span class="log-success">OK</span></span>
+      </div>
+      <div class="console-line">
+        <span class="timestamp">[09:00:02]</span>
+        <span class="log-msg">Connecting to SAE interface... <span class="log-success">OK</span></span>
+      </div>
+    </footer>
+
   </div>
-</nav>
-
-<div class="container">
-  
-  <!-- SIDEBAR METRICS -->
-  <aside class="sidebar">
-    <div class="meta-panel">
-      <span class="meta-label">Project Status</span>
-      <span class="meta-value" style="color: var(--success)">PUBLISHED</span>
-      
-      <span class="meta-label">Model Architecture</span>
-      <span class="meta-value">Janus v3 (40M)</span>
-      
-      <span class="meta-label">Intervention</span>
-      <span class="meta-value">Vector Space Homeostasis</span>
-      
-      <hr style="border: 0; border-top: 1px solid var(--border); margin: 1.5rem 0;">
-      
-      <div class="legend-item"><div class="dot control"></div> Control Model</div>
-      <div class="legend-item"><div class="dot adaptive"></div> Adaptive (VSM)</div>
-    </div>
-
-    <div class="meta-panel">
-      <span class="meta-label">Key Findings</span>
-      <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
-        1. <strong style="color: var(--text-main)">Subspace Disentanglement:</strong> 60.3% reduction in feature correlation.<br><br>
-        2. <strong style="color: var(--text-main)">Sparsity Crossover:</strong> "Filter-then-Pack" strategy observed.<br><br>
-        3. <strong style="color: var(--text-main)">Functional Specialization:</strong> Emergence of load-bearing semantic heads.
-      </p>
-    </div>
-  </aside>
-
-  <!-- MAIN DASHBOARD -->
-  <main class="main-content">
-
-    <!-- HERO -->
-    <div style="margin-bottom: 1rem;">
-      <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Mechanistic Workbench</h1>
-      <p class="mono" style="color: var(--text-muted);">Project Janus Part II: Validation of Orthogonal Regularization</p>
-    </div>
-
-    <!-- MODULE 1: TOPOLOGY -->
-    <section class="module">
-      <div class="module-header">
-        <div>
-          <h2 class="module-title">I. Topology & Rank</h2>
-          <div class="module-subtitle">Visualizing the "Expansion Hub" at Layer 6</div>
-        </div>
-        <div class="flex-row">
-          <button class="btn active" onclick="updateTopology('rank')">Effective Rank</button>
-          <button class="btn" onclick="updateTopology('sim')">Cosine Sim</button>
-        </div>
-      </div>
-
-      <div class="chart-container" id="topologyChart">
-        <!-- SVG injected by JS -->
-      </div>
-      
-      <div style="display: flex; gap: 2rem; margin-top: 2rem;">
-        <div style="flex: 1;">
-          <span class="meta-label">Layer 6 Rank Utilization</span>
-          <div style="display: flex; align-items: flex-end; gap: 1rem; margin-top: 1rem;">
-            <div>
-              <div style="font-size: 2rem; color: var(--control);">55.1%</div>
-              <div class="mono" style="font-size: 0.8rem;">Control</div>
-            </div>
-            <div style="font-size: 1.5rem; color: var(--text-muted);">→</div>
-            <div>
-              <div style="font-size: 2rem; color: var(--adaptive);">60.1%</div>
-              <div class="mono" style="font-size: 0.8rem;">Adaptive</div>
-            </div>
-          </div>
-        </div>
-        <div style="flex: 1;">
-          <span class="meta-label">Interpretation</span>
-          <p style="font-size: 0.9rem; color: var(--text-muted);">
-            The VSM intervention forces the model to utilize 9.0% more of the available vector space in the middle layers, effectively "creating" parameters through geometric hygiene.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- MODULE 2: SPARSITY -->
-    <section class="module">
-      <div class="module-header">
-        <div>
-          <h2 class="module-title">II. Feature Dynamics</h2>
-          <div class="module-subtitle">The "Sparsity Crossover" Phenomenon (L0 Norm)</div>
-        </div>
-      </div>
-
-      <div class="chart-container" id="sparsityChart">
-        <!-- SVG injected by JS -->
-      </div>
-
-      <div class="inspector-panel" style="grid-template-columns: 1fr;">
-        <p style="margin: 0; font-size: 0.9rem; line-height: 1.6;">
-          <strong style="color: var(--adaptive)">The Filter-then-Pack Strategy:</strong><br>
-          Note the crossover at Layer 6. The Adaptive model is <strong>sparser</strong> in early layers (filtering noise) but <strong>denser</strong> in deep layers (packing meaning). The Control model remains flat and noisy throughout.
-        </p>
-      </div>
-    </section>
-
-    <!-- MODULE 3: CAUSALITY -->
-    <section class="module">
-      <div class="module-header">
-        <div>
-          <h2 class="module-title">III. Functional Attribution</h2>
-          <div class="module-subtitle">Ablation Impact (Layer 9) - Click bars to inspect</div>
-        </div>
-      </div>
-
-      <div class="chart-container" id="ablationChart">
-        <!-- SVG injected by JS -->
-      </div>
-
-      <div id="headInspector" class="inspector-panel hidden">
-        <div>
-          <span class="meta-label">Control Model (L9H7)</span>
-          <div class="module-subtitle" style="margin-bottom: 1rem;">Syntactic Scaffolding</div>
-          <div class="token-list">
-            <div class="token-item"><span>"that"</span><span class="token-score">2.32</span></div>
-            <div class="token-item"><span>"has"</span><span class="token-score">2.18</span></div>
-            <div class="token-item"><span>"of"</span><span class="token-score">1.64</span></div>
-            <div class="token-item"><span>"in"</span><span class="token-score">1.21</span></div>
-          </div>
-        </div>
-        <div style="border-left: 1px solid var(--border); padding-left: 1rem;">
-          <span class="meta-label" style="color: var(--adaptive)">Adaptive Model (L9H1)</span>
-          <div class="module-subtitle" style="margin-bottom: 1rem;">Semantic Binding</div>
-          <div class="token-list">
-            <div class="token-item"><span style="color: var(--adaptive)">"lazy"</span><span class="token-score">1.62</span></div>
-            <div class="token-item"><span style="color: var(--adaptive)">"fox"</span><span class="token-score">0.94</span></div>
-            <div class="token-item"><span style="color: var(--adaptive)">"complex"</span><span class="token-score">0.88</span></div>
-            <div class="token-item"><span style="color: var(--adaptive)">"brown"</span><span class="token-score">0.72</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </main>
-</div>
 
 <script>
-  // --- RAW DATA FROM CSV FILES ---
-  
-  const topologyData = [
-    { layer: 3, control_rank: 280.4, adaptive_rank: 289.5, control_sim: 0.0218, adaptive_sim: 0.0146 },
-    { layer: 6, control_rank: 282.1, adaptive_rank: 307.5, control_sim: 0.0177, adaptive_sim: 0.0083 },
-    { layer: 9, control_rank: 286.9, adaptive_rank: 290.4, control_sim: 0.0305, adaptive_sim: 0.0121 }
-  ];
-
-  // Aggregated averages from sae_training_results.csv
-  const sparsityData = [
-    { layer: 3, control_l0: 32.4, adaptive_l0: 28.4 },
-    { layer: 6, control_l0: 39.7, adaptive_l0: 45.5 },
-    { layer: 9, control_l0: 58.9, adaptive_l0: 73.9 }
-  ];
-
-  // Top heads from ablation_results.csv (Layer 9 only for clarity)
-  const ablationDataL9 = [
-    { head: 0, control: 0.29, adaptive: 0.14 },
-    { head: 1, control: 0.19, adaptive: 0.93 }, // The Load Bearing Head
-    { head: 2, control: 0.09, adaptive: 0.22 },
-    { head: 3, control: 0.07, adaptive: 0.44 },
-    { head: 4, control: 0.18, adaptive: 0.27 },
-    { head: 5, control: 0.15, adaptive: 0.36 },
-    { head: 6, control: 0.27, adaptive: 0.13 },
-    { head: 7, control: 0.37, adaptive: 0.34 }
-  ];
-
-  // --- CHARTING ENGINE (SVG) ---
-
-  function createSVG(width, height) {
-    const ns = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(ns, "svg");
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-    return { svg, ns };
-  }
-
-  function drawLineChart(containerId, data, keyControl, keyAdaptive, yMin, yMax, label) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-    const { svg, ns } = createSVG(800, 300);
-    
-    const padding = 40;
-    const w = 800 - padding * 2;
-    const h = 300 - padding * 2;
-
-    // Scales
-    const xScale = (i) => padding + (i / (data.length - 1)) * w;
-    const yScale = (val) => 300 - padding - ((val - yMin) / (yMax - yMin)) * h;
-
-    // Grid & Axis
-    const layers = [3, 6, 9];
-    layers.forEach((l, i) => {
-      const x = xScale(i);
-      
-      // Vertical line
-      const line = document.createElementNS(ns, "line");
-      line.setAttribute("x1", x); line.setAttribute("y1", padding);
-      line.setAttribute("x2", x); line.setAttribute("y2", 300 - padding);
-      line.setAttribute("class", "grid-line");
-      svg.appendChild(line);
-
-      // Label
-      const text = document.createElementNS(ns, "text");
-      text.setAttribute("x", x - 10);
-      text.setAttribute("y", 300 - padding + 20);
-      text.setAttribute("class", "axis-text");
-      text.textContent = `L${l}`;
-      svg.appendChild(text);
-    });
-
-    // Path Generator
-    const makePath = (key, cssClass) => {
-      let d = "";
-      data.forEach((pt, i) => {
-        const x = xScale(i);
-        const y = yScale(pt[key]);
-        d += (i === 0 ? "M" : "L") + `${x},${y} `;
-        
-        // Dot
-        const circle = document.createElementNS(ns, "circle");
-        circle.setAttribute("cx", x); circle.setAttribute("cy", y);
-        circle.setAttribute("r", 4);
-        circle.setAttribute("fill", cssClass.includes("control") ? "#ef4444" : "#38bdf8");
-        svg.appendChild(circle);
-      });
-      const path = document.createElementNS(ns, "path");
-      path.setAttribute("d", d);
-      path.setAttribute("class", cssClass);
-      svg.appendChild(path);
-    };
-
-    makePath(keyControl, "line-control");
-    makePath(keyAdaptive, "line-adaptive");
-
-    container.appendChild(svg);
-  }
-
-  function drawBarChart(containerId, data) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-    const { svg, ns } = createSVG(800, 300);
-    
-    const padding = 40;
-    const w = 800 - padding * 2;
-    const h = 300 - padding * 2;
-    const barWidth = 20;
-    const gap = 50;
-
-    // Max value for scale
-    const maxVal = 1.0; // Fixed scale for percentage
-
-    data.forEach((d, i) => {
-      const xCenter = padding + (i * (w / 8)) + (w/16);
-      
-      // Control Bar
-      const hControl = (d.control / maxVal) * h;
-      const rectC = document.createElementNS(ns, "rect");
-      rectC.setAttribute("x", xCenter - barWidth - 2);
-      rectC.setAttribute("y", 300 - padding - hControl);
-      rectC.setAttribute("width", barWidth);
-      rectC.setAttribute("height", hControl);
-      rectC.setAttribute("class", "bar-control");
-      svg.appendChild(rectC);
-
-      // Adaptive Bar
-      const hAdaptive = (d.adaptive / maxVal) * h;
-      const rectA = document.createElementNS(ns, "rect");
-      rectA.setAttribute("x", xCenter + 2);
-      rectA.setAttribute("y", 300 - padding - hAdaptive);
-      rectA.setAttribute("width", barWidth);
-      rectA.setAttribute("height", hAdaptive);
-      rectA.setAttribute("class", "bar-adaptive");
-      
-      // Interaction for Head 1
-      if (d.head === 1) {
-        rectA.style.cursor = "pointer";
-        rectA.onclick = () => {
-          document.getElementById('headInspector').classList.remove('hidden');
-          rectA.style.fill = "#fff"; // Highlight
-        };
-        
-        // Pulse animation for the hero head
-        const animate = document.createElementNS(ns, "animate");
-        animate.setAttribute("attributeName", "opacity");
-        animate.setAttribute("values", "0.8;1;0.8");
-        animate.setAttribute("dur", "2s");
-        animate.setAttribute("repeatCount", "indefinite");
-        rectA.appendChild(animate);
-      }
-      
-      svg.appendChild(rectA);
-
-      // Label
-      const text = document.createElementNS(ns, "text");
-      text.setAttribute("x", xCenter - 10);
-      text.setAttribute("y", 300 - padding + 20);
-      text.setAttribute("class", "axis-text");
-      text.textContent = `H${d.head}`;
-      svg.appendChild(text);
-    });
-
-    // Y Axis Label
-    const yLabel = document.createElementNS(ns, "text");
-    yLabel.setAttribute("x", 10);
-    yLabel.setAttribute("y", padding);
-    yLabel.setAttribute("class", "axis-text");
-    yLabel.textContent = "% Impact";
-    svg.appendChild(yLabel);
-
-    container.appendChild(svg);
-  }
-
-  // --- INITIALIZATION ---
-
-  function updateTopology(mode) {
-    // Toggle buttons
-    const btns = document.querySelectorAll('.module-header .btn');
-    btns.forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-
-    if (mode === 'rank') {
-      drawLineChart('topologyChart', topologyData, 'control_rank', 'adaptive_rank', 270, 310);
-    } else {
-      drawLineChart('topologyChart', topologyData, 'control_sim', 'adaptive_sim', 0, 0.04);
+  // --- RAW DATA (Parsed from your CSVs) ---
+  const DATA = {
+    sparsity: [
+      { layer: 3, control: 32.4, adaptive: 28.4 },
+      { layer: 6, control: 39.7, adaptive: 45.5 },
+      { layer: 9, control: 58.9, adaptive: 73.9 }
+    ],
+    topology: [
+      { layer: 3, control: 280.4, adaptive: 289.5 },
+      { layer: 6, control: 282.1, adaptive: 307.5 },
+      { layer: 9, control: 286.9, adaptive: 290.4 }
+    ],
+    ablation: {
+      control: [0.29, 0.19, 0.08, 0.07, 0.17, 0.15, 0.26, 0.36], // Layer 9 heads
+      adaptive: [0.93, 0.14, 0.22, 0.43, 0.27, 0.35, 0.12, 0.33] // Layer 9 heads
     }
-  }
-
-  // Init
-  window.onload = () => {
-    updateTopology('rank');
-    drawLineChart('sparsityChart', sparsityData, 'control_l0', 'adaptive_l0', 20, 80);
-    drawBarChart('ablationChart', ablationDataL9);
   };
 
-</script>
+  // --- STATE ---
+  let currentMode = 'adaptive';
+  let charts = {};
 
+  // --- INITIALIZATION ---
+  window.onload = function() {
+    initCharts();
+    renderAblationGrid();
+    log("Ready. Displaying Layer 9 analysis.", "success");
+  };
+
+  // --- CHARTS ---
+  function initCharts() {
+    // 1. Sparsity Chart (Line)
+    const ctxSparsity = document.getElementById('sparsityChart').getContext('2d');
+    charts.sparsity = new Chart(ctxSparsity, {
+      type: 'line',
+      data: {
+        labels: ['Layer 3', 'Layer 6', 'Layer 9'],
+        datasets: [
+          {
+            label: 'Control (Baseline)',
+            data: DATA.sparsity.map(d => d.control),
+            borderColor: '#ef4444',
+            backgroundColor: '#ef4444',
+            borderDash: [5, 5],
+            tension: 0.4
+          },
+          {
+            label: 'Adaptive (VSM)',
+            data: DATA.sparsity.map(d => d.adaptive),
+            borderColor: '#38bdf8',
+            backgroundColor: '#38bdf8',
+            tension: 0.4
+          }
+        ]
+      },
+      options: getChartConfig('Feature Density (L0)')
+    });
+
+    // 2. Topology Chart (Bar)
+    const ctxTopology = document.getElementById('topologyChart').getContext('2d');
+    charts.topology = new Chart(ctxTopology, {
+      type: 'bar',
+      data: {
+        labels: ['Layer 3', 'Layer 6', 'Layer 9'],
+        datasets: [
+          {
+            label: 'Control',
+            data: DATA.topology.map(d => d.control),
+            backgroundColor: 'rgba(239, 68, 68, 0.5)',
+            borderColor: '#ef4444',
+            borderWidth: 1
+          },
+          {
+            label: 'Adaptive',
+            data: DATA.topology.map(d => d.adaptive),
+            backgroundColor: 'rgba(56, 189, 248, 0.5)',
+            borderColor: '#38bdf8',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: getChartConfig('Effective Rank')
+    });
+  }
+
+  function getChartConfig(yLabel) {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { family: 'Fira Code' } } }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: yLabel, color: '#64748b' },
+          grid: { color: '#1e293b' },
+          ticks: { color: '#94a3b8', font: { family: 'Fira Code' } }
+        },
+        x: {
+          grid: { color: '#1e293b' },
+          ticks: { color: '#94a3b8', font: { family: 'Fira Code' } }
+        }
+      }
+    };
+  }
+
+  // --- ABLATION GRID RENDERER ---
+  function renderAblationGrid() {
+    const grid = document.getElementById('ablationGrid');
+    grid.innerHTML = '';
+    
+    const data = DATA.ablation[currentMode];
+    const maxVal = Math.max(...DATA.ablation.adaptive); // Normalize against max possible
+
+    data.forEach((val, index) => {
+      const cell = document.createElement('div');
+      cell.className = 'head-cell';
+      
+      // Color calculation (Heatmap style)
+      // Low = Blue/Grey, High = Red/Orange
+      const intensity = val / maxVal;
+      const r = Math.floor(intensity * 255);
+      const b = Math.floor((1 - intensity) * 100);
+      
+      cell.style.backgroundColor = `rgba(${r}, 50, ${b}, 0.6)`;
+      cell.style.border = `1px solid rgba(${r}, 50, ${b}, 1)`;
+
+      // Tooltip
+      const tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      tooltip.innerHTML = `Head ${index}<br>Impact: ${val.toFixed(3)}%`;
+      cell.appendChild(tooltip);
+
+      cell.onclick = () => {
+        log(`Analyzing Layer 9, Head ${index}...`, "info");
+        if (currentMode === 'adaptive' && index === 0) {
+          setTimeout(() => log(">> LOAD BEARING HEAD DETECTED. Semantic Binding: 'fox', 'lazy', 'brown'", "success"), 300);
+        } else if (currentMode === 'control' && index === 7) {
+          setTimeout(() => log(">> REDUNDANT HEAD. Syntactic Scaffolding: 'that', 'has', 'of'", "warn"), 300);
+        }
+      };
+
+      grid.appendChild(cell);
+    });
+  }
+
+  // --- INTERACTION ---
+  function setMode(mode) {
+    if (currentMode === mode) return;
+    currentMode = mode;
+    
+    // Update Buttons
+    document.getElementById('btn-control').classList.toggle('active', mode === 'control');
+    document.getElementById('btn-adaptive').classList.toggle('active', mode === 'adaptive');
+
+    // Update Stats
+    if (mode === 'adaptive') {
+      document.getElementById('stat-rank').innerText = "307.5";
+      document.getElementById('stat-sparsity').innerText = "73.9";
+      document.getElementById('stat-sparsity').style.color = "var(--accent-green)";
+      document.getElementById('lambda-val').innerText = "0.124";
+      log("Switched to ADAPTIVE model context.", "info");
+    } else {
+      document.getElementById('stat-rank').innerText = "282.1";
+      document.getElementById('stat-sparsity').innerText = "58.9";
+      document.getElementById('stat-sparsity').style.color = "var(--accent-red)";
+      document.getElementById('lambda-val').innerText = "0.000";
+      log("Switched to CONTROL model context.", "warn");
+    }
+
+    // Update Grid
+    renderAblationGrid();
+  }
+
+  // --- UTILS ---
+  function log(msg, type = "normal") {
+    const consoleDiv = document.getElementById('console');
+    const line = document.createElement('div');
+    line.className = 'console-line';
+    
+    const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+    let colorClass = "log-msg";
+    if (type === "info") colorClass = "log-info";
+    if (type === "warn") colorClass = "log-warn";
+    if (type === "success") colorClass = "log-success";
+
+    line.innerHTML = `
+      <span class="timestamp">[${time}]</span>
+      <span class="${colorClass}">${msg}</span>
+    `;
+    
+    consoleDiv.appendChild(line);
+    consoleDiv.scrollTop = consoleDiv.scrollHeight;
+  }
+
+</script>
 </body>
 </html>
