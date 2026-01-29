@@ -116,9 +116,14 @@
     }
 
     /* Mobile Responsiveness */
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       nav {
         flex-direction: column;
+        gap: 1rem;
+      }
+      .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 1rem;
       }
       h1 { font-size: 2.5rem; }
@@ -132,6 +137,7 @@
     <div class="nav-links">
       <a href="mission.html">Mission</a>
       <a href="projects.html">Projects</a>
+      <a href="workbench.html">Workbench</a>
       <a href="staff.html">Staff</a>
       <a href="helpdesk.html">Helpdesk</a>
       <a href="about.html">About</a>
